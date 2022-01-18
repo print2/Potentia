@@ -4,7 +4,7 @@ from time import *
 import subprocess
 import os
 import asyncio
-#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
+import _thread
 ##   IMPORTANT INFO   ##
 
     #Using python-kasa instead of pyHS100
@@ -17,8 +17,6 @@ import asyncio
             #apt-get update
             #apt-get upgrade
             #apt-get install network-manager
-
-            #https://raspberrypi.stackexchange.com/questions/29783/how-to-setup-network-manager-on-raspbian
 
             #IF FAILS
                 #try "sudo apt-get install network-manager"
@@ -69,7 +67,7 @@ def getNetworksInfo(attempts=3,attemptDelay=5):
             return networks,True
             break
         sleep(attemptDelay)
-    
+   
     print("No networks found")
     return None,False
 
@@ -80,7 +78,7 @@ def getSSIDs():
         networksArr = networks.split("\n") #arr of diff networks and their info
         ssids = []
 
-        iSsidStart = networksArr[0].find("SSID",12) #find string index of SSID's
+        iSsidStart = networksArr[0].find("SSID") #find string index of SSID's
         iSsidEnd = networksArr[0].find("MODE",iSsidStart) -2
 
         for i in range(len(networksArr)-2):
@@ -88,10 +86,10 @@ def getSSIDs():
             if((networksArr[i+1])[0] == "*"): #finds current network - labelled with star
                 currSSID = ssids[i]
 
-        return ssids,True,currSSID
+        return ssids,currSSID
 
     print("No SSIDS found")
-    return None,False,None
+    return None,None
 
 def getDevIPs(attempts=3,attemptDelay = 5):
     cDevsOnNet = "arp -a" #lists visible devices on network - some devices are invisible until pinged
@@ -128,26 +126,26 @@ def connectTo(network,password="''",attempts=3,attemptDelay=5):
         if "success" in result: #if connection was successful
             print("Connected to " + network + " on attempt: " + str(i + 1))
             connected = True
-            return connected
+            break
         sleep(attemptDelay)
-        
-    print("Failed to connect to " + network)
+       
+    if(not connected):
+        print("Failed to connect to " + network)
+
     return connected
 
 #finds SSID of smart plug
 def findSpSSID():
     spFound = False
-    spSSID = None
-    arrSSIDs,SSIDsFound,currNet = getSSIDs()
-    if(SSIDsFound):
+    spSSID = []
+    arrSSIDs,currNet = getSSIDs()
+    if len(arrSSIDs)>0:
         for k in range(len(arrSSIDs)):
             if "TP-LINK_Smart Plug" in arrSSIDs[k]: #checks all SSIDS to see if they are a smart plug network
                 spFound = True
-                spSSID = arrSSIDs[k]
-                return spSSID,spFound,currNet
+                spSSID.append(arrSSIDs[k])
 
-    print("Cannot find smart plug network")
-    return spSSID,spFound,currNet
+    return spSSID,currNet
 
 #uses kasa discover to ping smart devices on this network
 #without this, device would be invisible when we call getDevIPS
@@ -158,7 +156,8 @@ def attemptDiscover(attempts=3,attemptDelay=5):
         result = result.decode("UTF-8")
         if "==" in result: #found smartplug
             return True
-    
+            break
+   
     print("Could not find any smart devices on this network")
     return False
 
@@ -183,12 +182,8 @@ async def readPower(plug):
         sleep(1)
         i += 1
 
-def main():
-    plugSSID,plugFound,homeNet = findSpSSID()
-    homePass = input("What is the password to " + homeNet + "?")
-
-    if plugFound:
-        if(connectTo(plugSSID)):
+def checkPlug(plugSSID,homeNet,homePass):
+    if(connectTo(plugSSID)):
             devIPs,devMACs,devsFound = getDevIPs()
             if(devsFound):
                 plug = SmartPlug(devIPs[0])
@@ -196,7 +191,7 @@ def main():
                 asyncio.run(plug.wifi_join(homeNet,homePass)) #auto detect home network, pass as input
 
                 if(connectTo(homeNet,homePass)):
-
+                    #
                     plugConnected = True
                     if(attemptDiscover()):
 
@@ -210,10 +205,23 @@ def main():
                                     break
 
                             if(plugConnected and newIPFound):
-                                asyncio.run(readPower(plug))
+                                return plug
+                                #asyncio.run(readPower(plug))
 
-    
 
+
+
+def main():
+    plugSSID,homeNet = findSpSSID()
+    homePass = input("What is the password to " + homeNet + "?")
+    plugs=[]
+    for x in plugSSID:
+        plugs.append(checkPlug(x,homeNet,homePass))
+    while True:
+        for plug in plugs:
+            asyncio.run(readPower(plug))
+            
+       
     return homeNet,homePass
 
 if __name__ == "__main__":
@@ -224,3 +232,13 @@ if __name__ == "__main__":
     _ssids,_passed,currNet = getSSIDs()
     if(currNet != mainNet):
         connectTo(mainNet,mainPass)
+
+
+
+#when connect to plug, pi joins smart plug network, then connects to original network
+
+#have to wait for one to connect, before doing anything
+
+#2 connected and giving data
+#try to connect another one, must stop the other two from transferring data temporarily
+
