@@ -1,4 +1,5 @@
 from kasa import SmartPlug
+from kasa import Discover
 from pprint import pformat as pf
 from time import *
 import subprocess
@@ -90,31 +91,6 @@ def getSSIDs():
     print("No SSIDS found")
     return None,None
 
-def getDevIPs(attempts=3,attemptDelay = 5):
-    cDevsOnNet = "arp -a" #lists visible devices on network - some devices are invisible until pinged
-
-    for i in range(attempts):
-        sleep(attemptDelay)
-        devices = subprocess.check_output(cDevsOnNet.split())
-        devices = devices.decode("UTF-8")
-        if(len(devices.strip())>0):
-            break
-
-    if(len(devices.strip())<=0):
-        print("No devices found on this network")
-        return None,None,False
-
-    devicesArr = devices.split("\n") #array of devices info
-    devIPs = []
-    devMACs = []
-
-    for i in range(len(devicesArr)-1):
-        devicesArr[i] = devicesArr[i].split()
-        devIPs.append((devicesArr[i][1])[1:-1]) #get ip of each device
-        devMACs.append(devicesArr[i][3]) #get mac of each address
-
-    return devIPs,devMACs,True
-
 def connectTo(network,password="''",attempts=3,attemptDelay=5):
     connected = False
     print("Connecting to " + network)
@@ -133,8 +109,8 @@ def connectTo(network,password="''",attempts=3,attemptDelay=5):
 
     return connected
 
-#finds SSID of smart plug
-def findSpSSID():
+#finds SSID of smart plugs
+def findSpSSIDs():
     spFound = False
     spSSIDs = []
     arrSSIDs,currNet = getSSIDs()
@@ -146,19 +122,13 @@ def findSpSSID():
 
     return spSSIDs,currNet
 
-#uses kasa discover to ping smart devices on this network
-#without this, device would be invisible when we call getDevIPS
-def attemptDiscover(attempts=3,attemptDelay=5):
-    for i in range(attempts):
-        sleep(attemptDelay)
-        result = subprocess.check_output("kasa discover".split())
-        result = result.decode("UTF-8")
-        if "==" in result: #found smartplug
-            return True
-            break
-   
-    print("Could not find any smart devices on this network")
-    return False
+def getPlugsOnNet():
+    plugsFound = asyncio.run(Discover.discover())
+    return plugsFound.values()
+
+def connPlugToHome(plugs,ssid,password):
+    for plug in plugs:
+        asyncio.run(plug.wifi_join(ssid,password))
 
 #reads power every second
 async def readPower(plugs):
@@ -172,39 +142,19 @@ async def readPower(plugs):
 
 def connectPlug(plugSSID,homeNet,homePass):
     if(connectTo(plugSSID)):
-            devIPs,devMACs,devsFound = getDevIPs()
-            if(devsFound):
-                plug = SmartPlug(devIPs[0])
-                plugMAC = devMACs[0]
-                asyncio.run(plug.wifi_join(homeNet,homePass)) #auto detect home network, pass as input
-
-                if(connectTo(homeNet,homePass)):
-                    plugConnected = True
-                    if(attemptDiscover()):
-
-                        homeDevIPs, homeDevMACs,devIPsFound = getDevIPs()
-                        if(devIPsFound):
-                            newIPFound = False
-                            for i in range(len(homeDevMACs)):
-                                if(plugMAC == homeDevMACs[i]):
-                                    plug = SmartPlug(homeDevIPs[i])
-                                    newIPFound = True
-                                    break
-
-                            if(plugConnected and newIPFound):
-                                alias = input("Give this plug a name: ")
-                                asyncio.run(plug.set_alias(alias))
-                                return plug
-
-
-
-
+        connPlugToHome(getPlugsOnNet(),homeNet,homePass)
+        connectTo(homeNet,homePass)
+            
 def main():
-    plugSSIDs,homeNet = findSpSSID()
+    plugSSIDs,homeNet = findSpSSIDs()
     homePass = input("What is the password to " + homeNet + "?")
-    connectedPlugs=[]
     for x in plugSSIDs:
-        connectedPlugs.append(connectPlug(x,homeNet,homePass))
+        connectPlug(x,homeNet,homePass)
+
+    discoveredPlugs = asyncio.run(Discover.discover())
+    connectedPlugs = discoveredPlugs.values()
+    for plug in connectedPlugs:
+        print(plug.alias)
 
     asyncio.run(readPower(connectedPlugs))
             
