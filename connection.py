@@ -128,7 +128,12 @@ def getPlugsOnNet():
 
 def connPlugToHome(plugs,ssid,password):
     for plug in plugs:
-        asyncio.run(plug.wifi_join(ssid,password))
+        asyncio.run(actOnPlugs(plug,ssid,password))
+
+async def actOnPlugs(plug,ssid,password):
+    alias = input("Give this plug a name: ")
+    await plug.set_alias(alias)
+    await plug.wifi_join(ssid,password)
 
 #reads power every second
 async def readPower(plugs):
