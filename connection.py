@@ -4,7 +4,6 @@ from time import *
 import subprocess
 import os
 import asyncio
-import _thread
 ##   IMPORTANT INFO   ##
 
     #Using python-kasa instead of pyHS100
@@ -137,15 +136,15 @@ def connectTo(network,password="''",attempts=3,attemptDelay=5):
 #finds SSID of smart plug
 def findSpSSID():
     spFound = False
-    spSSID = []
+    spSSIDs = []
     arrSSIDs,currNet = getSSIDs()
     if len(arrSSIDs)>0:
         for k in range(len(arrSSIDs)):
             if "TP-LINK_Smart Plug" in arrSSIDs[k]: #checks all SSIDS to see if they are a smart plug network
                 spFound = True
-                spSSID.append(arrSSIDs[k])
+                spSSIDs.append(arrSSIDs[k])
 
-    return spSSID,currNet
+    return spSSIDs,currNet
 
 #uses kasa discover to ping smart devices on this network
 #without this, device would be invisible when we call getDevIPS
@@ -162,27 +161,16 @@ def attemptDiscover(attempts=3,attemptDelay=5):
     return False
 
 #reads power every second
-async def readPower(plug):
-    i=0
+async def readPower(plugs):
     while(True):
-        if(i==10):
-            i=0
-            decision = input("Enter F to change state, Q to quit, or anything else to continue")
-            if(decision=="Q"):
-                break
-            elif(decision=="F"):
-                if(plug.is_on):
-                    await plug.turn_off()
-                else:
-                    await plug.turn_on()
-
-        await plug.update()
-        power = await plug.current_consumption()
-        print(power)
+        for plug in plugs:
+            await plug.update()
+            power = await plug.current_consumption()
+            print(plug.alias + " is currently using: " + str(power) + " W")
+        print("")
         sleep(1)
-        i += 1
 
-def checkPlug(plugSSID,homeNet,homePass):
+def connectPlug(plugSSID,homeNet,homePass):
     if(connectTo(plugSSID)):
             devIPs,devMACs,devsFound = getDevIPs()
             if(devsFound):
@@ -191,7 +179,6 @@ def checkPlug(plugSSID,homeNet,homePass):
                 asyncio.run(plug.wifi_join(homeNet,homePass)) #auto detect home network, pass as input
 
                 if(connectTo(homeNet,homePass)):
-                    #
                     plugConnected = True
                     if(attemptDiscover()):
 
@@ -205,21 +192,21 @@ def checkPlug(plugSSID,homeNet,homePass):
                                     break
 
                             if(plugConnected and newIPFound):
+                                alias = input("Give this plug a name: ")
+                                asyncio.run(plug.set_alias(alias))
                                 return plug
-                                #asyncio.run(readPower(plug))
 
 
 
 
 def main():
-    plugSSID,homeNet = findSpSSID()
+    plugSSIDs,homeNet = findSpSSID()
     homePass = input("What is the password to " + homeNet + "?")
-    plugs=[]
-    for x in plugSSID:
-        plugs.append(checkPlug(x,homeNet,homePass))
-    while True:
-        for plug in plugs:
-            asyncio.run(readPower(plug))
+    connectedPlugs=[]
+    for x in plugSSIDs:
+        connectedPlugs.append(connectPlug(x,homeNet,homePass))
+
+    asyncio.run(readPower(connectedPlugs))
             
        
     return homeNet,homePass
