@@ -5,6 +5,13 @@ from time import *
 import subprocess
 import os
 import asyncio
+from datetime import datetime
+from pymongo import MongoClient
+
+cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongodb.net/Plugs?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
+db = cluster.test
+db=cluster["Plugs"]
+collection=db["UsageData"]
 ##   IMPORTANT INFO   ##
 
     #Using python-kasa instead of pyHS100
@@ -139,9 +146,14 @@ async def actOnPlugs(plug,ssid,password):
 async def readPower(plugs):
     while(True):
         for plug in plugs:
-            await plug.update()
-            power = await plug.current_consumption()
-            print(plug.alias + " is currently using: " + str(power) + " W")
+            try:
+                await plug.update()
+                power = await plug.current_consumption()
+                post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
+                collection.insert_one(post)
+                print(plug.alias + " is currently using: " + str(power) + " W")
+            except:
+                print("ERROR: " + plug.alias + "not found")
         print("")
         sleep(1)
 
@@ -184,3 +196,7 @@ if __name__ == "__main__":
 #2 connected and giving data
 #try to connect another one, must stop the other two from transferring data temporarily
 
+#collection.delete_one({"_id":1})
+#results=collection.find({"_id":0)
+
+#collections.insert_many({post1,post2})
