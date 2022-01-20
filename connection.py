@@ -120,7 +120,7 @@ def findSpSSIDs():
                 spFound = True
                 spSSIDs.append(arrSSIDs[k])
 
-    return spSSIDs,currNet
+    return spSSIDs,currNet,spFound
 
 def getPlugsOnNet():
     plugsFound = asyncio.run(Discover.discover())
@@ -137,13 +137,25 @@ async def actOnPlugs(plug,ssid,password):
 
 #reads power every second
 async def readPower(plugs):
+    plugTasks = []
+    for plug in plugs:
+        plugTasks.append(asyncio.create_task(readSingle(plug)))
+    
+    for task in plugTasks:
+        await task
+
+
+async def readSingle(plug):
     while(True):
-        for plug in plugs:
+        try:
             await plug.update()
             power = await plug.current_consumption()
             print(plug.alias + " is currently using: " + str(power) + " W")
-        print("")
-        sleep(1)
+        except:
+            print("ERROR: " + plug.alias + " not found")
+
+        await asyncio.sleep(1)
+
 
 def connectPlug(plugSSID,homeNet,homePass):
     if(connectTo(plugSSID)):
@@ -151,10 +163,11 @@ def connectPlug(plugSSID,homeNet,homePass):
         connectTo(homeNet,homePass)
             
 def main():
-    plugSSIDs,homeNet = findSpSSIDs()
-    homePass = input("What is the password to " + homeNet + "?")
-    for x in plugSSIDs:
-        connectPlug(x,homeNet,homePass)
+    plugSSIDs,homeNet,found = findSpSSIDs()
+    if(found):
+        homePass = input("What is the password to " + homeNet + "?")
+        for x in plugSSIDs:
+            connectPlug(x,homeNet,homePass)
 
     discoveredPlugs = asyncio.run(Discover.discover())
     connectedPlugs = discoveredPlugs.values()
@@ -184,3 +197,8 @@ if __name__ == "__main__":
 #2 connected and giving data
 #try to connect another one, must stop the other two from transferring data temporarily
 
+#handle when plug disconnects  
+    #try and except, until we rediscover devices
+
+#Dont ask for wifi password if no devices to connect
+#COnnect device to device
