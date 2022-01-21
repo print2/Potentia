@@ -25,6 +25,10 @@ DEPENDENCIES
         python.asyncio: 
             '   python3 -m pip install asyncio   '
 
+        pyMongo:
+            '   python3 -m pip install pyMongo   '
+            '   python3 -m pip install pyMongo[srv]'
+
     COMMON ISSUES AND FIXES
 
         Raspberry Pi:
@@ -35,6 +39,9 @@ DEPENDENCIES
     
         Network-Manager(nmcli):
             Wifi connection issues caused by purging dhcpcd5 - resolved by using nmcli to connect via command line: '   nmcli dev wifi connect {SSID} password {PASSWORD}   '
+
+        pyMongo:
+            Cluster connection closed - check that device IPs are whitelisted on mongoDB
 
         General:
             Program will not work with networks that need extra authentication steps after a password e.g. eduroam
