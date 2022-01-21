@@ -9,7 +9,6 @@ from datetime import datetime
 from pymongo import MongoClient
 
 cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongodb.net/Plugs?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
-db = cluster.test
 db=cluster["Plugs"]
 collection=db["UsageData"]
 ##   IMPORTANT INFO   ##
