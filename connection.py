@@ -5,6 +5,13 @@ from time import *
 import subprocess
 import os
 import asyncio
+from datetime import datetime
+from pymongo import MongoClient
+
+cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongodb.net/Plugs?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
+db = cluster.test
+db=cluster["Plugs"]
+collection=db["UsageData"]
 ##   IMPORTANT INFO   ##
 
     #Using python-kasa instead of pyHS100
@@ -150,9 +157,13 @@ async def readSingle(plug):
         try:
             await plug.update()
             power = await plug.current_consumption()
+            
             print(plug.alias + " is currently using: " + str(power) + " W")
         except:
             print("ERROR: " + plug.alias + " not found")
+
+        post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
+        collection.insert_one(post)
 
         await asyncio.sleep(1)
 
