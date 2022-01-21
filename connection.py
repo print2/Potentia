@@ -51,9 +51,6 @@ collection=db["UsageData"]
     #create new plug object, with plug and pi both on home network
     #Can then manipulate the plug however you like
 
-    #This program gets power usage every second, and gives user option to turn off/on the plug every 10 seconds
-        #F to change state, anything else to continue seeing usage
-
 
 ##   Things to note   ##
 
