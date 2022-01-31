@@ -30,9 +30,14 @@ def getNetworksInfo(attempts=3,attemptDelay=5):
     print("No networks found")
     return None,False
 
+def forceRescan():
+    cRescan = "nmcli dev wifi rescan"
+    os.system(cRescan)
+
 #returns the SSIDs of all networks accessable to this device, along with the SSID of the current network this device is connected to
 def getSSIDs():
     networks,netsFound = getNetworksInfo()
+    currSSID = None
 
     if(netsFound):
         networksArr = networks.split("\n") #arr of diff networks and their info
@@ -109,12 +114,13 @@ async def readSingle(plug):
             await plug.update()
             power = await plug.current_consumption()
             
-            print(plug.alias + " is currently using: " + str(power) + " W")
+            print(plug.alias + " is currently using: " + str(power) + " W at "+ datetime.now().strftime("%H: %M: %S:"))
+            usefulMac = plug.hw_info['mac'][12:]
+
+            post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
+            collection.insert_one(post)
         except:
             pass
-
-        post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
-        collection.insert_one(post)
 
         await asyncio.sleep(1)
 
@@ -129,12 +135,26 @@ async def detectNewPlug(prevPlugs):
 #connect a plug to the devices network
 #returns the plug instance after connected
 async def connectPlug(plugSSID,homeNet,homePass,currPlugs):
-    if(connectTo(plugSSID)):
-        plugsOnNet = await getPlugsOnNet()
-        await connPlugToHome(plugsOnNet.values(),homeNet,homePass)
-        connectTo(homeNet,homePass)
+    if(checkUniquePlug(plugSSID,currPlugs)):
+        if(connectTo(plugSSID)):
+            plugsOnNet = await getPlugsOnNet()
+            await connPlugToHome(plugsOnNet.values(),homeNet,homePass)
+            connectTo(homeNet,homePass)
 
-        return await detectNewPlug(currPlugs)
+            return await detectNewPlug(currPlugs)
+
+    return None
+
+def checkUniquePlug(plugSSID,connectedPlugs):
+    ssidList = []
+    for ip in connectedPlugs:
+        usefulMac = connectedPlugs[ip].hw_info['mac'][12:]
+        ssid = "TP-LINK_Smart Plug_" + usefulMac[:2] + usefulMac[3:]
+        ssidList.append(ssid)
+
+    if(plugSSID not in ssidList):
+        return True
+    return False
 
 #connects all 'connectable' smart plugs to the devices network and asynchronously reads each plugs power usage
 async def connToAll(homePass):
@@ -146,7 +166,8 @@ async def connToAll(homePass):
         for ssid in plugsToConnect:
             plugsOnNet = await getPlugsOnNet()
             plug = await connectPlug(ssid,homeNet,homePass,plugsOnNet)
-            asyncio.ensure_future(readSingle(plug),loop=event_loop)
+            if(plug):
+                asyncio.ensure_future(readSingle(plug),loop=event_loop)
 
 #begins reading of all connected devices, then permanently and concurrently scans for new plugs to connect every 60 seconds
 async def scanForPlugs(homePass):
@@ -156,7 +177,7 @@ async def scanForPlugs(homePass):
 
     while True:
         await connToAll(homePass)
-        await asyncio.sleep(60)
+        await asyncio.sleep(5)
 
 def main():
     global event_loop
