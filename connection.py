@@ -12,6 +12,7 @@ cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongo
 db=cluster["Plugs"]
 collection=db["UsageData"]
 
+#returns information about all networks accessable to this device and if any have been found
 def getNetworksInfo(attempts=3,attemptDelay=5):
     cListNets = "nmcli dev wifi list" #lists available networks
     cRescan = "nmcli dev wifi rescan" #rescans for networks
@@ -23,12 +24,13 @@ def getNetworksInfo(attempts=3,attemptDelay=5):
         networks = networks.decode("UTF-8")#decodes output
         if(len(networks.strip())>0):
             return networks,True
-            break
+
         sleep(attemptDelay)
    
     print("No networks found")
     return None,False
 
+#returns the SSIDs of all networks accessable to this device, along with the SSID of the current network this device is connected to
 def getSSIDs():
     networks,netsFound = getNetworksInfo()
 
@@ -49,6 +51,8 @@ def getSSIDs():
     print("No SSIDS found")
     return None,None
 
+#connects your device to the given network with the given password
+#returns state of success
 def connectTo(network,password="''",attempts=3,attemptDelay=5):
     connected = False
     print("Connecting to " + network)
@@ -60,6 +64,7 @@ def connectTo(network,password="''",attempts=3,attemptDelay=5):
             print("Connected to " + network + " on attempt: " + str(i + 1))
             connected = True
             break
+
         sleep(attemptDelay)
        
     if(not connected):
@@ -67,7 +72,8 @@ def connectTo(network,password="''",attempts=3,attemptDelay=5):
 
     return connected
 
-#finds SSID of smart plugs
+#finds SSID of smart plug networks accessable to this device
+#returns all smart plug SSIDs found, along with the current network the device is connected to and if any smart plug networks were found
 def findSpSSIDs():
     spFound = False
     spSSIDs = []
@@ -80,19 +86,23 @@ def findSpSSIDs():
 
     return spSSIDs,currNet,spFound
 
+#returns a IP:Plug dictionary containing all plugs on the same network as the device
 async def getPlugsOnNet():
     plugsFound = await Discover.discover()
     return plugsFound
 
+#connects all given plugs to a given network - usually the home network
 async def connPlugToHome(plugs,ssid,password):
     for plug in plugs:
         await actOnPlugs(plug,ssid,password)
 
+#assigns an alias to a given plug and then connects this plug to a given network
 async def actOnPlugs(plug,ssid,password):
     alias = input("Give this plug a name: ")
     await plug.set_alias(alias)
     await plug.wifi_join(ssid,password)
 
+#reads the current power usage of a given plug, and posts it to our mongoDB
 async def readSingle(plug):
     while(True):
         try:
@@ -108,19 +118,25 @@ async def readSingle(plug):
 
         await asyncio.sleep(1)
 
+#detects any newly connected plug on this network
+#returns this plug instance
 async def detectNewPlug(prevPlugs):
     newPlugs = await getPlugsOnNet()
     for ip in newPlugs:
         if ip not in prevPlugs:
             return newPlugs[ip]
 
+#connect a plug to the devices network
+#returns the plug instance after connected
 async def connectPlug(plugSSID,homeNet,homePass,currPlugs):
     if(connectTo(plugSSID)):
         plugsOnNet = await getPlugsOnNet()
         await connPlugToHome(plugsOnNet.values(),homeNet,homePass)
         connectTo(homeNet,homePass)
+
         return await detectNewPlug(currPlugs)
 
+#connects all 'connectable' smart plugs to the devices network and asynchronously reads each plugs power usage
 async def connToAll(homePass):
     plugsToConnect,homeNet,found = findSpSSIDs()
     print("checking for new smart plugs")
@@ -132,6 +148,7 @@ async def connToAll(homePass):
             plug = await connectPlug(ssid,homeNet,homePass,plugsOnNet)
             asyncio.ensure_future(readSingle(plug),loop=event_loop)
 
+#begins reading of all connected devices, then permanently and concurrently scans for new plugs to connect every 60 seconds
 async def scanForPlugs(homePass):
     connectedPlugs = await getPlugsOnNet()
     for ip in connectedPlugs:
@@ -159,3 +176,4 @@ if __name__ == "__main__":
 
 
 #delay when plug connects before it reads - seems to pause all threads*
+# do we need to move DB post within try
