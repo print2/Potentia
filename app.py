@@ -3,7 +3,9 @@ from pymongo import MongoClient
 from datetime import datetime
 from pprint import pprint as p
 from flask import Flask, request, jsonify
+import json
 from bson.json_util import dumps
+import requests
 
 app=Flask(__name__)
 
@@ -27,6 +29,7 @@ def getPlugData2(name):
     return dumps(collection.find({
     "name": name,
     }))
+@app.route('/calculateaverageusage/<name>&<timeStart>&<timeEnd>', methods=["GET"])
 def calculateAverageUsage(name,timeStart,timeEnd):
     #calculates the average usage over a given time
     cursor=getPlugData(name,timeStart,timeEnd)
@@ -39,17 +42,9 @@ def calculateAverageUsage(name,timeStart,timeEnd):
 
 
 #print(calculateAverageUsage("testAsync",datetime(2022, 1, 21, 17, 3, 25, 0),datetime(2022, 1, 22, 13, 47, 33, 186000)))
-#cursor=getPlugData("test1",datetime(2022, 1, 20, 13, 47, 25, 0),datetime(2022, 1, 20, 13, 47, 33, 186000))
 #for x in cursor:
 #    p(x)
 
-if __name__=='__main__':
-    app.run()
-
-
-from typing import Collection
-
-app=Flask(__name__)
 
 
 def getLiveData(name):
@@ -76,17 +71,34 @@ def getConnectPlugs():
     #return jsonify(plugs['name'])
     pass
 
-def getHighestUsage():
-    pass
+
+def getHighestUsage(data):
+    #assumes plugs are left on constantly
+    ret=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    readings=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    for x in data:#go through data returned by getPlugData()
+        y=x["date/time"]
+        y=repr(y)
+        hour=int(y[22:24])
+        ret[hour]+=x["Power"]#array of 24 hours
+        readings[hour]+=1
+    for i in range(24):
+        if readings[i]!=0:
+            ret[i]/=readings[i]
+    return ret
 
 
+@app.route('/generatereport/<name>&<timeStart>&<timeEnd>', methods=["GET"])
 def generateReport(name,timeStart,timeEnd):
-    data=getPlugData(name,timeStart,timeEnd)#return all data
-    #identify times when used- return hourly period during the day where most usage
-    #for each type of device have list of reasons why could be using lot of power (either a lot in short period of time or more than usual over longer period)- items can be grouped together
-    currentavg=calculateAverageUsage(name,timeStart,timeEnd)*(timeEnd-timeStart)#compare total used this time period to previous time period (e.g. this month to last month)
-    previousavg=calculateAverageUsage(name,timeStart-(timeEnd-timeStart),timeStart)
-
+    data=requests.get('http://127.0.0.1:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
+    #return getHighestUsage(data)#identify times when used- return hourly period during the day where most usage
+    data=json.loads(data.text)
+    return dumps(getHighestUsage(data))
+    #return dumps(usageByHour)
+    # for each type of device have list of reasons why could be using lot of power (either a lot in short period of time or more than usual over longer period)- items can be grouped together
+    #currentavg=calculateAverageUsage(name,timeStart,timeEnd)*(timeEnd-timeStart)#compare total used this time period to previous time period (e.g. this month to last month)
+    #previousavg=calculateAverageUsage(name,timeStart-(timeEnd-timeStart),timeStart)
+#generateReport("test1","20210120134725000000","20230120134733186000")
 #print(calculateAverageUsage("testAsync",datetime(2022, 1, 21, 17, 3, 25, 0),datetime(2022, 1, 22, 13, 47, 33, 186000)))
 #cursor=getPlugData("test1",datetime(2022, 1, 20, 13, 47, 25, 0),datetime(2022, 1, 20, 13, 47, 33, 186000))
 #for x in cursor:
