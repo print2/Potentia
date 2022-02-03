@@ -1,3 +1,8 @@
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class plugProfile{
     private String name;
     private String location;
@@ -101,6 +106,38 @@ public class plugProfile{
         setIP(ip);
         setMAC(mac);
         setModel(model);
+    }
+
+    public void retrieveCurrUsage(){
+        try{
+            System.out.println("test2");
+            URL url = new URL("http://192.168.43.24:5000/getplugdata/test1&20220120134725000000&20220120134733186000");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            System.out.println("test3");
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+            System.out.println("test4");
+            if(conn.getResponseCode() != 200){
+                System.out.println("test5");
+                throw new RuntimeException ("Failed : HTTP error code: " + conn.getResponseCode());
+            }
+            
+            System.out.println("test6");
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            String output;
+            System.out.println("Output from server ... \n");
+            while ((output = br.readLine()) != null){
+                System.out.println("test");
+                System.out.println(output);
+            }
+
+            conn.disconnect();;
+        } catch (MalformedURLException e){
+            e.printStackTrace();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     //set timers
