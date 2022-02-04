@@ -35,6 +35,7 @@ public class testDriver {
         applianceList.add(washingMachine);
 
         plugProfile plug = new plugProfile("Test");
+        plug.setIP("192.168.43.28");
         plug.retrieveCurrUsage();
     }
 }

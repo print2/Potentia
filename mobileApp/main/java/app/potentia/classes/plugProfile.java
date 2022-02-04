@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class plugProfile{
     private String name;
@@ -108,9 +109,18 @@ public class plugProfile{
         setModel(model);
     }
 
-    public String retrieveCurrUsage(){
+    private String execFlaskMethod(String methodName, arrayList<String> parameters){
+        String ip = "192.168.43.134:5000";
+        String accessUrl = "http://" + ip +"/" + methodName + "/";
+        for String parameter : parameters{
+            accessUrl = accessUrl + parameter + "&";
+        }
+        if(parameters.size() > 0){
+            accessUrl = accessUrl.substring(0,accessUrl.length() -1);
+        }
+
         try{
-            URL url = new URL("http://192.168.43.134/currUsage/192.168.43.28");
+            URL url = new URL(accessUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -132,11 +142,18 @@ public class plugProfile{
 
         } catch (MalformedURLException e){
             e.printStackTrace();
-            return "failed MURL"
+            return "failed MURL";
         } catch(IOException e){
             e.printStackTrace();
-            return "failed IO"
+            return "failed IO";
         }
+
+    }
+
+    public String retrieveCurrUsage(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(this.plugIP);
+        return execFlaskMethod("usageTest",params);
     }
 
     //set timers
