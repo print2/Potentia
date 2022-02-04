@@ -110,25 +110,19 @@ public class plugProfile{
 
     public String retrieveCurrUsage(){
         try{
-            System.out.println("test2");
-            URL url = new URL("http://192.168.43.24:5000/getplugdata/test1&20220120134725000000&20220120134733186000");
+            URL url = new URL("http://192.168.43.134/currUsage/192.168.43.28");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            System.out.println("test3");
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
-            System.out.println("test4");
             if(conn.getResponseCode() != 200){
-                System.out.println("test5");
                 throw new RuntimeException ("Failed : HTTP error code: " + conn.getResponseCode());
             }
             
-            System.out.println("test6");
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             
             String output;
             System.out.println("Output from server ... \n");
             while ((output = br.readLine()) != null){
-                System.out.println("test");
                 System.out.println(output);
             }
 
