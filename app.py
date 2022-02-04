@@ -52,7 +52,7 @@ def calculateAverageUsage(name,timeStart,timeEnd):
 
 def getLiveData(name):
     #return the current usage data for a given plug
-    return dumps(Collection.findOne({
+    return dumps(collection.findOne({
         "name": name,
         "$orderby": {"date/time" : -1}}))
 
