@@ -179,6 +179,11 @@ async def scanForPlugs(homePass):
         await connToAll(homePass)
         await asyncio.sleep(5)
 
+async def currUsageTest(ip):
+    plug = SmartPlug(ip)
+    await plug.update()
+    return await plug.current_consumption()
+
 def main():
     global event_loop
     event_loop = asyncio.get_event_loop()

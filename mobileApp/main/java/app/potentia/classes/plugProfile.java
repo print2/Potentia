@@ -108,7 +108,7 @@ public class plugProfile{
         setModel(model);
     }
 
-    public void retrieveCurrUsage(){
+    public String retrieveCurrUsage(){
         try{
             System.out.println("test2");
             URL url = new URL("http://192.168.43.24:5000/getplugdata/test1&20220120134725000000&20220120134733186000");
@@ -132,11 +132,16 @@ public class plugProfile{
                 System.out.println(output);
             }
 
-            conn.disconnect();;
+            conn.disconnect();
+
+            return output;
+
         } catch (MalformedURLException e){
             e.printStackTrace();
+            return "failed MURL"
         } catch(IOException e){
             e.printStackTrace();
+            return "failed IO"
         }
     }
 

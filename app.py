@@ -7,6 +7,9 @@ import json
 from bson.json_util import dumps
 import requests
 
+import asyncio
+from connection import currUsageTest
+
 app=Flask(__name__)
 
 cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongodb.net/Plugs?retryWrites=true&w=majority")
@@ -103,6 +106,12 @@ def generateReport(name,timeStart,timeEnd):
 #cursor=getPlugData("test1",datetime(2022, 1, 20, 13, 47, 25, 0),datetime(2022, 1, 20, 13, 47, 33, 186000))
 #for x in cursor:
 #    p(x)
+
+@app.route('/usageTest/<ip>',methods=["GET"])
+def usageTest(ip):
+    power = asyncio.run(currUsageTest(ip))
+    return dumps(power)
+
 
 if __name__=='__main__':
     app.run(port=5000,host='0.0.0.0')
