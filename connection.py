@@ -184,17 +184,10 @@ async def scanForPlugs(homePass):
         await connToAll(homePass)
         await asyncio.sleep(5)
 
-<<<<<<< HEAD
 async def getUsageTest(ip):
     plug = SmartPlug(ip)
     await plug.update()
     return dumps(await plug.current_consumption())
-=======
-async def currUsageTest(ip):
-    plug = SmartPlug(ip)
-    await plug.update()
-    return await plug.current_consumption()
->>>>>>> 718df44b5c2ab8f52f5cc9801b66e03f318bcdd5
 
 def main():
     global event_loop
