@@ -8,6 +8,8 @@ import asyncio
 from datetime import datetime
 from pymongo import MongoClient
 
+from bson.json_util import dumps
+
 cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongodb.net/Plugs?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
 db=cluster["Plugs"]
 collection=db["UsageData"]
@@ -179,7 +181,6 @@ async def scanForPlugs(homePass):
         await connToAll(homePass)
         await asyncio.sleep(5)
 
-
 # FLASK METHODS TO MAKE:
 
 #method to display all available smart plug networks
@@ -210,10 +211,12 @@ async def connToOne(homePass):
         if(plug):
             asyncio.ensure_future(readSingle(plug),loop=event_loop)
 
-async def currUsageTest(ip):
+
+async def getUsageTest(ip):
     plug = SmartPlug(ip)
     await plug.update()
-    return await plug.current_consumption()
+    return dumps(await plug.current_consumption())
+
 
 def main():
     global event_loop
