@@ -109,10 +109,10 @@ public class plugProfile{
         setModel(model);
     }
 
-    private String execFlaskMethod(String methodName, arrayList<String> parameters){
+    private String execFlaskMethod(String methodName, ArrayList<String> parameters){
         String ip = "192.168.43.134:5000";
         String accessUrl = "http://" + ip +"/" + methodName + "/";
-        for String parameter : parameters{
+        for (String parameter : parameters){
             accessUrl = accessUrl + parameter + "&";
         }
         if(parameters.size() > 0){

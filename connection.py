@@ -179,6 +179,37 @@ async def scanForPlugs(homePass):
         await connToAll(homePass)
         await asyncio.sleep(5)
 
+
+# FLASK METHODS TO MAKE:
+
+#method to display all available smart plug networks
+    #user chooses which smart plug to connect
+
+#method to take SSID, returns plug info to plugProfile once connected
+    #info includes plug IP, MAC, Model
+    #once connected, calls method that repeatedly reads power usage (readSingle) (ensureFuture)
+
+#method to read power usage and send to db
+    #readSingle, ensureFuture
+
+#method to change alias of plug to plugProfile name
+
+
+
+# FLASK METHODS:
+
+async def connToOne(homePass):
+    plugsToConnect,homeNet,found = findSpSSIDs()
+    print("checking for new smart plugs")
+
+    if(found):
+        print("found new smart plug")
+        ssid = plugsToConnect[0]
+        plugsOnNet = await getPlugsOnNet()
+        plug = await connectPlug(ssid,homeNet,homePass,plugsOnNet)
+        if(plug):
+            asyncio.ensure_future(readSingle(plug),loop=event_loop)
+
 async def currUsageTest(ip):
     plug = SmartPlug(ip)
     await plug.update()
