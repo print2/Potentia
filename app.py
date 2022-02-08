@@ -5,16 +5,10 @@ from pprint import pprint as p
 from flask import Flask, request, jsonify
 import json
 from bson.json_util import dumps
-<<<<<<< HEAD
-import asyncio
-
-from connection import getUsageTest
-=======
 import requests
 
 import asyncio
-from connection import currUsageTest
->>>>>>> 718df44b5c2ab8f52f5cc9801b66e03f318bcdd5
+from connection import getUsageTest
 
 app=Flask(__name__)
 
@@ -49,12 +43,6 @@ def calculateAverageUsage(name,timeStart,timeEnd):
         readings+=1
     return totalpower/readings
 
-<<<<<<< HEAD
-@app.route('/usageTest/<ip>',methods=["GET"])
-def usageTest(ip):
-    power = asyncio.run(getUsageTest(ip))
-    return power
-=======
 
 def getMonth(currDay,currMonth):
     if (currDay>=29 and currMonth==2) or (currDay>=31 and (currMonth==4 or currMonth==6 or currMonth==9 or currMonth==11)) or currDay>=32:
@@ -83,9 +71,13 @@ def getdatapoints(name,timeStart,timeEnd):
                     while int(repr(data[i]["date/time"])[22:24])==currHour:#go through all readings in 1 hour
                         totalhourusage+=int(repr(data[i]["Power"]))
                         readingsnum+=1
-                        i+=1#get next reading
-                        if i>=length:
-                            ret.append(totalhourusage/readingsnum)
+                        if i>=length-1:#reached end of readings
+                            i+=1#get next reading
+                            if readingsnum>0:
+                                ret.append(totalhourusage/readingsnum)
+                            else:
+                                ret.append(0)
+                            #if currHourtime
                             return dumps(ret)#finish
                     currHour+=1
                     if currHour>=24:
@@ -170,7 +162,6 @@ def generateReport(name,timeStart,timeEnd):
     #currentavg=calculateAverageUsage(name,timeStart,timeEnd)*(timeEnd-timeStart)#compare total used this time period to previous time period (e.g. this month to last month)
     #previousavg=calculateAverageUsage(name,timeStart-(timeEnd-timeStart),timeStart)
 #generateReport("test1","20210120134725000000","20230120134733186000")
->>>>>>> 718df44b5c2ab8f52f5cc9801b66e03f318bcdd5
 #print(calculateAverageUsage("testAsync",datetime(2022, 1, 21, 17, 3, 25, 0),datetime(2022, 1, 22, 13, 47, 33, 186000)))
 #cursor=getPlugData("test1",datetime(2022, 1, 20, 13, 47, 25, 0),datetime(2022, 1, 20, 13, 47, 33, 186000))
 #for x in cursor:
