@@ -217,7 +217,6 @@ async def getUsageTest(ip):
     await plug.update()
     return dumps(await plug.current_consumption())
 
-
 def main():
     global event_loop
     event_loop = asyncio.get_event_loop()
