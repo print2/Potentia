@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Potentia</string>
+    <string name="get_info">Get Informed</string>
+    <string name="s_plugs">Smart Plugs</string>
+    <string name="home">Home</string>
+    <string name="notif">Notifications</string>
+    <string name="settings">Settings</string>
+    <string name="login">Log In</string>
+
+</resources>
