@@ -1,5 +1,7 @@
 package app.potentia;
 
+import static java.lang.Thread.sleep;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -10,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeFragment extends Fragment implements View.OnClickListener{
 
@@ -22,9 +27,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private TextView currentUsage;
     private String string;
 
-    private plugProfile plug = new plugProfile("name");
-
-    private Handler handler = new Handler();
+    public plugProfile plug = new plugProfile("name");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,25 +46,42 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
+        plug.setIP("192.168.43.28");
         currentUsage.setVisibility(currentUsage.VISIBLE);
-        Async update = (Async) new Async().execute(plug);
+
+        currUsageAsyncTask();
     }
 
-    public class Async extends AsyncTask<plugProfile, Void, Void>{
-        
+    public class Async extends AsyncTask<plugProfile, Void, String>{
+
         @Override
-        protected Void doInBackground(plugProfile... plug) {
-            handler.post(updateCurrent);
-            return null;
+        protected String doInBackground(plugProfile... params) {
+            string = plug.retrieveCurrUsage();
+            return string;
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            currentUsage.setText(result);
         }
 
     }
 
-    Runnable updateCurrent = new Runnable(){
-        public void run() {
-            string = plug.retrieveCurrUsage();
-            currentUsage.setText(string);
-            handler.postDelayed(this, 1000);
-        }
-    };
+    private void currUsageAsyncTask() {
+
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        Async update = (Async) new Async().execute(plug);
+                    }
+                });
+            }
+        };
+        timer.schedule(task, 0, 1000);
+    }
 }

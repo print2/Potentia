@@ -110,7 +110,7 @@ public class plugProfile{
     }
 
     private String execFlaskMethod(String methodName, ArrayList<String> parameters){
-        String ip = "192.168.43.134:5000";
+        String ip = "192.168.43.24:5000";
         String accessUrl = "http://" + ip +"/" + methodName + "/";
         for (String parameter : parameters){
             accessUrl = accessUrl + parameter + "&";
