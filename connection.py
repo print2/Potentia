@@ -8,6 +8,8 @@ import asyncio
 from datetime import datetime
 from pymongo import MongoClient
 
+from bson.json_util import dumps
+
 cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongodb.net/Plugs?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
 db=cluster["Plugs"]
 collection=db["UsageData"]
@@ -179,10 +181,42 @@ async def scanForPlugs(homePass):
         await connToAll(homePass)
         await asyncio.sleep(5)
 
-async def currUsageTest(ip):
+# FLASK METHODS TO MAKE:
+
+#method to display all available smart plug networks
+    #user chooses which smart plug to connect
+
+#method to take SSID, returns plug info to plugProfile once connected
+    #info includes plug IP, MAC, Model
+    #once connected, calls method that repeatedly reads power usage (readSingle) (ensureFuture)
+
+#method to read power usage and send to db
+    #readSingle, ensureFuture
+
+#method to change alias of plug to plugProfile name
+
+
+
+# FLASK METHODS:
+
+async def connToOne(homePass):
+    plugsToConnect,homeNet,found = findSpSSIDs()
+    print("checking for new smart plugs")
+
+    if(found):
+        print("found new smart plug")
+        ssid = plugsToConnect[0]
+        plugsOnNet = await getPlugsOnNet()
+        plug = await connectPlug(ssid,homeNet,homePass,plugsOnNet)
+        if(plug):
+            asyncio.ensure_future(readSingle(plug),loop=event_loop)
+
+
+async def getUsageTest(ip):
     plug = SmartPlug(ip)
     await plug.update()
-    return await plug.current_consumption()
+    return dumps(await plug.current_consumption())
+
 
 def main():
     global event_loop

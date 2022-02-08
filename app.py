@@ -5,10 +5,11 @@ from pprint import pprint as p
 from flask import Flask, request, jsonify
 import json
 from bson.json_util import dumps
-import requests
-
 import asyncio
-from connection import currUsageTest
+
+from connection import getUsageTest
+
+import requests
 
 app=Flask(__name__)
 
@@ -43,10 +44,70 @@ def calculateAverageUsage(name,timeStart,timeEnd):
         readings+=1
     return totalpower/readings
 
+@app.route('/usageTest/<ip>',methods=["GET"])
+def usageTest(ip):
+    power = asyncio.run(getUsageTest(ip))
+    return power
 
-#print(calculateAverageUsage("testAsync",datetime(2022, 1, 21, 17, 3, 25, 0),datetime(2022, 1, 22, 13, 47, 33, 186000)))
-#for x in cursor:
-#    p(x)
+def getMonth(currDay,currMonth):
+    if (currDay>=29 and currMonth==2) or (currDay>=31 and (currMonth==4 or currMonth==6 or currMonth==9 or currMonth==11)) or currDay>=32:
+        return True
+    else:
+         return False
+@app.route('/getdatapoints/<name>&<timeStart>&<timeEnd>', methods=["GET"])
+def getdatapoints(name,timeStart,timeEnd):
+    #get all readings and produce an average for each hour during the time period
+    #to be displayed on the graph
+    data=requests.get('http://127.0.0.1:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
+    data=json.loads(data.text)
+    currHour=int(timeStart[6:8])
+    currDay= int(timeStart[4:6])
+    currMonth=int(timeStart[4:6])
+    currYear=int(timeStart[:4])
+    i=0
+    ret=[]
+    length=len(data)
+    while True:#keep going until end of the list is reached
+        while int(repr(data[i]["date/time"])[11:15])==currYear:#go through all readings in 1 year
+            while int(repr(data[i]["date/time"])[16:18])==currMonth:#go through all readings in 1 month
+                while int(repr(data[i]["date/time"])[19:21])==currDay:#go through all readings in 1 day
+                    totalhourusage=0
+                    readingsnum=0
+                    while int(repr(data[i]["date/time"])[22:24])==currHour:#go through all readings in 1 hour
+                        totalhourusage+=int(repr(data[i]["Power"]))
+                        readingsnum+=1
+                        i+=1#get next reading
+                        if i>=length:
+                            ret.append(totalhourusage/readingsnum)
+                            return dumps(ret)#finish
+                    currHour+=1
+                    if currHour>=24:
+                        #new day
+                        currDay+=1
+                        month=getMonth(currDay,currMonth)
+                        currHour=0
+                    if readingsnum>0:
+                        ret.append(totalhourusage/readingsnum)
+                    else:
+                        ret.append(0)
+                currDay+=1
+                if getMonth(currDay,currMonth):
+                    currDay=1
+                    currMonth+=1
+                    if currMonth==13:
+                        currYear+=1
+                        currMonth=1
+
+            currMonth+=1
+            currDay=1
+            
+        currYear+=1
+        currMonth=1
+        currDay=1
+        return dumps([])
+    
+    
+
 
 
 
@@ -76,6 +137,7 @@ def getConnectPlugs():
 
 
 def getHighestUsage(data):
+    #identify times when used- return hourly period during the day where most usage
     #assumes plugs are left on constantly
     ret=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     readings=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -93,8 +155,7 @@ def getHighestUsage(data):
 
 @app.route('/generatereport/<name>&<timeStart>&<timeEnd>', methods=["GET"])
 def generateReport(name,timeStart,timeEnd):
-    data=requests.get('http://127.0.0.1:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
-    #return getHighestUsage(data)#identify times when used- return hourly period during the day where most usage
+    data=requests.get('http://192.168.43.134:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
     data=json.loads(data.text)
     return dumps(getHighestUsage(data))
     #return dumps(usageByHour)
@@ -107,11 +168,5 @@ def generateReport(name,timeStart,timeEnd):
 #for x in cursor:
 #    p(x)
 
-@app.route('/usageTest/<ip>',methods=["GET"])
-def usageTest(ip):
-    power = asyncio.run(currUsageTest(ip))
-    return dumps(power)
-
-
 if __name__=='__main__':
-    app.run(port=5000,host='0.0.0.0')
+    app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')
