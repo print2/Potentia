@@ -8,6 +8,11 @@ import asyncio
 from datetime import datetime
 from pymongo import MongoClient
 
+from flask import Flask
+from bson.json_util import dumps
+
+app = Flask(__name__)
+
 cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongodb.net/Plugs?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
 db=cluster["Plugs"]
 collection=db["UsageData"]
@@ -179,10 +184,17 @@ async def scanForPlugs(homePass):
         await connToAll(homePass)
         await asyncio.sleep(5)
 
+<<<<<<< HEAD
+async def getUsageTest(ip):
+    plug = SmartPlug(ip)
+    await plug.update()
+    return dumps(await plug.current_consumption())
+=======
 async def currUsageTest(ip):
     plug = SmartPlug(ip)
     await plug.update()
     return await plug.current_consumption()
+>>>>>>> 718df44b5c2ab8f52f5cc9801b66e03f318bcdd5
 
 def main():
     global event_loop
