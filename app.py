@@ -6,8 +6,9 @@ from flask import Flask, request, jsonify
 import json
 from bson.json_util import dumps
 import asyncio
+from kasa import SmartPlug
 
-from connection import getUsageTest
+from connection import *
 
 import requests
 
@@ -44,69 +45,61 @@ def calculateAverageUsage(name,timeStart,timeEnd):
         readings+=1
     return totalpower/readings
 
-@app.route('/usageTest/<ip>',methods=["GET"])
-def usageTest(ip):
-    power = asyncio.run(getUsageTest(ip))
-    return power
-
 def getMonth(currDay,currMonth):
+    #determines if the month has changed
     if (currDay>=29 and currMonth==2) or (currDay>=31 and (currMonth==4 or currMonth==6 or currMonth==9 or currMonth==11)) or currDay>=32:
         return True
     else:
          return False
 @app.route('/getdatapoints/<name>&<timeStart>&<timeEnd>', methods=["GET"])
-def getdatapoints(name,timeStart,timeEnd):
+def getDataPoints(name,timeStart,timeEnd):
     #get all readings and produce an average for each hour during the time period
     #to be displayed on the graph
     data=requests.get('http://127.0.0.1:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
     data=json.loads(data.text)
-    currHour=int(timeStart[6:8])
-    currDay= int(timeStart[4:6])
+    currHour=int(timeStart[8:10])
+    currDay= int(timeStart[6:8])
     currMonth=int(timeStart[4:6])
     currYear=int(timeStart[:4])
     i=0
     ret=[]
+    end=datetime(int(timeEnd[:4]), int(timeEnd[4:6]), int(timeEnd[6:8]), int(timeEnd[8:10]),0, 0, 0)
     length=len(data)
-    while True:#keep going until end of the list is reached
-        while int(repr(data[i]["date/time"])[11:15])==currYear:#go through all readings in 1 year
-            while int(repr(data[i]["date/time"])[16:18])==currMonth:#go through all readings in 1 month
-                while int(repr(data[i]["date/time"])[19:21])==currDay:#go through all readings in 1 day
+    while True:
                     totalhourusage=0
                     readingsnum=0
-                    while int(repr(data[i]["date/time"])[22:24])==currHour:#go through all readings in 1 hour
-                        totalhourusage+=int(repr(data[i]["Power"]))
-                        readingsnum+=1
-                        i+=1#get next reading
-                        if i>=length:
-                            ret.append(totalhourusage/readingsnum)
-                            return dumps(ret)#finish
-                    currHour+=1
-                    if currHour>=24:
-                        #new day
-                        currDay+=1
-                        month=getMonth(currDay,currMonth)
-                        currHour=0
+                    try:
+                        while data[i]["date/time"].hour==currHour and data[i]["date/time"].day==currDay and data[i]["date/time"].month==currMonth and data[i]["date/time"].year==currYear:#go through all readings in 1 hour
+                            totalhourusage+=int(data[i]["Power"])
+                            readingsnum+=1
+                            i+=1#get next reading
+                            if i>=length:#reached end of readings
+                                break
+                    except:
+                        pass
                     if readingsnum>0:
                         ret.append(totalhourusage/readingsnum)
                     else:
                         ret.append(0)
-                currDay+=1
-                if getMonth(currDay,currMonth):
-                    currDay=1
-                    currMonth+=1
-                    if currMonth==13:
-                        currYear+=1
-                        currMonth=1
+                    if end <= datetime(currYear,currMonth,currDay,currHour,0,0,0):#reached end of time period
+                        return dumps(ret)#finish
+                    currHour+=1#next hour
+                    if currHour>=24:#next day
+                        #new day
+                        currDay+=1
+                        currHour=0
+                        month=getMonth(currDay,currMonth)
+                        if getMonth(currDay,currMonth):#next month
+                            currDay=1
+                            currMonth+=1
+                            if currMonth==13:#next year
+                                currYear+=1
+                                currMonth=1
+                                currHour=0
 
-            currMonth+=1
-            currDay=1
-            
-        currYear+=1
-        currMonth=1
-        currDay=1
-        return dumps([])
-    
-    
+#get all data points for each hour
+#when time changes, reset total hour usage and readings num
+#add zeros to list until next hour is reached
 
 
 
@@ -168,5 +161,25 @@ def generateReport(name,timeStart,timeEnd):
 #for x in cursor:
 #    p(x)
 
+@app.route('/usageTest/<ip>',methods=["GET"])
+def usageTest(ip):
+    power = asyncio.run(getUsageTest(ip))
+    return power
+
+@app.route('/turnOff/<ip>',methods=["GET"])
+def turnPlugOff(ip):
+    asyncio.run(asyncTurnPlugOff(ip))
+    return dumps('test')
+
+@app.route('/turnOn/<ip>',methods=["GET"])
+def turnPlugOn(ip):
+    asyncio.run(asyncTurnPlugOn(ip))
+    return dumps('Test')
+
+@app.route('/getUnconnected/',methods=["GET"])
+def getUnconnected():
+    list = asyncio.run(getPlugsToConnect())
+    return list
+
 if __name__=='__main__':
-    app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')
+  app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')

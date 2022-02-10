@@ -199,6 +199,18 @@ async def scanForPlugs(homePass):
 
 # FLASK METHODS:
 
+async def getPlugsToConnect():
+    plugsToConnect,homeNet,found = findSpSSIDs()
+
+    listOfPlugs = ""
+
+    for i in range(len(plugsToConnect)):
+        listOfPlugs = listOfPlugs + plugsToConnect[i] + "|"
+    
+    listOfPlugs = listOfPlugs[:-1]
+
+    return dumps(listOfPlugs)
+
 async def connToOne(homePass):
     plugsToConnect,homeNet,found = findSpSSIDs()
     print("checking for new smart plugs")
@@ -217,6 +229,15 @@ async def getUsageTest(ip):
     await plug.update()
     return dumps(await plug.current_consumption())
 
+async def asyncTurnPlugOff(ip):
+    plug = SmartPlug(ip)
+    await plug.update()
+    await plug.turn_off()
+
+async def asyncTurnPlugOn(ip):
+    plug = SmartPlug(ip)
+    await plug.turn_on()
+    await plug.update()
 
 def main():
     global event_loop
