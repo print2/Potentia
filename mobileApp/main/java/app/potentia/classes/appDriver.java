@@ -3,9 +3,8 @@ import java.util.*;
 public class appDriver extends FlaskExecutor{
     
     public ArrayList<String> getUnconnectedPlugs(){
-        String unconnectedString;
         ArrayList<String> params = new ArrayList<>();
-        unconnectedString = execFlaskMethod("getUnconnected",params);
+        String unconnectedString = execFlaskMethod("getUnconnected",params);
 
         ArrayList<String> unconnectedList = new ArrayList<>();
 
