@@ -35,7 +35,13 @@ public class testDriver {
         applianceList.add(washingMachine);
 
         plugProfile plug = new plugProfile("Test");
-        plug.setIP("192.168.43.28");
-        plug.retrieveCurrUsage();
+        // plug.setIP("192.168.43.28");
+        // plug.retrieveCurrUsage();
+
+        appDriver potentia = new appDriver();
+        ArrayList<String> test = potentia.getUnconnectedPlugs();
+
+        System.out.println(test.get(0));
+        System.out.println(test.get(1));
     }
 }

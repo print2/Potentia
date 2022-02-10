@@ -6,8 +6,9 @@ from flask import Flask, request, jsonify
 import json
 from bson.json_util import dumps
 import asyncio
+from kasa import SmartPlug
 
-from connection import getUsageTest
+from connection import *
 
 import requests
 
@@ -43,11 +44,6 @@ def calculateAverageUsage(name,timeStart,timeEnd):
         totalpower+=x["Power"]
         readings+=1
     return totalpower/readings
-
-@app.route('/usageTest/<ip>',methods=["GET"])
-def usageTest(ip):
-    power = asyncio.run(getUsageTest(ip))
-    return power
 
 def getMonth(currDay,currMonth):
     #determines if the month has changed
@@ -164,6 +160,26 @@ def generateReport(name,timeStart,timeEnd):
 #cursor=getPlugData("test1",datetime(2022, 1, 20, 13, 47, 25, 0),datetime(2022, 1, 20, 13, 47, 33, 186000))
 #for x in cursor:
 #    p(x)
+
+@app.route('/usageTest/<ip>',methods=["GET"])
+def usageTest(ip):
+    power = asyncio.run(getUsageTest(ip))
+    return power
+
+@app.route('/turnOff/<ip>',methods=["GET"])
+def turnPlugOff(ip):
+    asyncio.run(asyncTurnPlugOff(ip))
+    return dumps('test')
+
+@app.route('/turnOn/<ip>',methods=["GET"])
+def turnPlugOn(ip):
+    asyncio.run(asyncTurnPlugOn(ip))
+    return dumps('Test')
+
+@app.route('/getUnconnected/',methods=["GET"])
+def getUnconnected():
+    list = asyncio.run(getPlugsToConnect())
+    return list
 
 if __name__=='__main__':
   app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')

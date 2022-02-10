@@ -1,10 +1,6 @@
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
+import java.util.*;
 
-public class plugProfile{
+public class plugProfile extends FlaskExecutor{
     private String name;
     private String location;
     private applianceProfile appliance;
@@ -107,47 +103,6 @@ public class plugProfile{
         setIP(ip);
         setMAC(mac);
         setModel(model);
-    }
-
-    private String execFlaskMethod(String methodName, ArrayList<String> parameters){
-        String ip = "192.168.43.24:5000";
-        String accessUrl = "http://" + ip +"/" + methodName + "/";
-        for (String parameter : parameters){
-            accessUrl = accessUrl + parameter + "&";
-        }
-        if(parameters.size() > 0){
-            accessUrl = accessUrl.substring(0,accessUrl.length() -1);
-        }
-
-        try{
-            URL url = new URL(accessUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-            if(conn.getResponseCode() != 200){
-                throw new RuntimeException ("Failed : HTTP error code: " + conn.getResponseCode());
-            }
-            
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            
-            String output;
-            System.out.println("Output from server ... \n");
-            while ((output = br.readLine()) != null){
-                System.out.println(output);
-            }
-
-            conn.disconnect();
-
-            return output;
-
-        } catch (MalformedURLException e){
-            e.printStackTrace();
-            return "failed MURL";
-        } catch(IOException e){
-            e.printStackTrace();
-            return "failed IO";
-        }
-
     }
 
     public String retrieveCurrUsage(){
