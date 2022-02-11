@@ -4,6 +4,7 @@ public class plugProfile extends FlaskExecutor{
     private String name;
     private String location;
     private applianceProfile appliance;
+    private String description;
     private boolean poweredOn;
     private float currUsage;
 
@@ -25,10 +26,11 @@ public class plugProfile extends FlaskExecutor{
         this.appliance = appliance;
     }
 
-    plugProfile(String name, String location, applianceProfile appliance){
+    plugProfile(String name, String location, applianceProfile appliance, String description){
         this.name = name;
         this.location = location;
         this.appliance = appliance;
+        this.description = description;
     }
 
     public String getName(){
