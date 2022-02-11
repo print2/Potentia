@@ -41,4 +41,13 @@ public class appDriver extends FlaskExecutor{
 
         return unconnectedList;
     }
+
+    public ArrayList<String> getConnectedPlugs(){
+        ArrayList<String> params = new ArrayList<>();
+        String connectedString = execFlaskMethod("getConnected",params);
+
+        ArrayList<String> connectedList = stringToList(connectedString);
+
+        return connectedList;
+    }
 }

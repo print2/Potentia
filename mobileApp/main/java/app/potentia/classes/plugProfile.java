@@ -10,7 +10,8 @@ public class plugProfile extends FlaskExecutor{
 
     private String plugIP;
     private String plugMAC;
-    private String plugModel;
+
+    private boolean connectedToPlug = false;
 
     plugProfile(String name){
         this.name = name;
@@ -93,24 +94,38 @@ public class plugProfile extends FlaskExecutor{
         this.plugMAC = mac;
     }
 
-    public String getModel(){
-        return plugModel;
+    public Boolean getConnected(){
+        return this.connectedToPlug;
     }
 
-    public void setModel(String model){
-        this.plugModel = model;
+    public void setConnected(Boolean connected){
+        this.connectedToPlug = connected;
     }
 
-    public void changePhysicalPlug(String ip, String mac, String model){
+    public void changePhysicalPlug(String ip, String mac){
         setIP(ip);
         setMAC(mac);
-        setModel(model);
     }
 
     public String retrieveCurrUsage(){
         ArrayList<String> params = new ArrayList<>();
         params.add(this.plugIP);
         return execFlaskMethod("usageTest",params);
+    }
+
+    public void connectPlug(String password, String network, String ssid){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(password.replace(' ','~'));
+        params.add(network.replace(' ','~'));
+        params.add(ssid.replace(' ','~'));
+
+        String plugInfo = execFlaskMethod("connectSingle",params);
+        ArrayList<String> infoList = stringToList(plugInfo);
+
+        this.plugIP = infoList.get(0);
+        this.plugMAC = infoList.get(1);
+
+        this.connectedToPlug = true;
     }
 
     //set timers

@@ -47,12 +47,19 @@ public class FlaskExecutor {
         ArrayList<String> list = new ArrayList<>();
 
         int cutoff = string.indexOf('|');
+        if(cutoff == -1){
+            string = string.substring(1,string.length()-1);
+        }
+
         while (cutoff != -1){
             list.add(string.substring(1,cutoff));
-             string = string.substring(cutoff+1,string.length() -1);
+            string = string.substring(cutoff+1,string.length()-1);
             cutoff = string.indexOf('|');
         }
-        list.add(string);
+
+        if(!string.equals("")){
+            list.add(string);
+        }
 
         return list;
     }

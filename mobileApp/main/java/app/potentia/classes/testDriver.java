@@ -8,9 +8,19 @@ public class testDriver {
         // plug.retrieveCurrUsage();
 
         appDriver potentia = new appDriver();
-        ArrayList<String> test = potentia.getUnconnectedPlugs();
+        ArrayList<String> connected = potentia.getConnectedPlugs();
+        ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
 
-        System.out.println(test.get(0));
-        System.out.println(test.get(1));
+        System.out.println(unconnected.size());
+
+        System.out.println(connected.get(0));
+        System.out.println(connected.get(1));
+
+        // System.out.println(plug.getIP());
+        // plug.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(0));
+
+        // System.out.println(plug.getIP());
+
+        // System.out.println(plug.retrieveCurrUsage());
     }
 }

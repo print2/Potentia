@@ -132,7 +132,7 @@ async def detectNewPlug(prevPlugs):
     newPlugs = await getPlugsOnNet()
     for ip in newPlugs:
         if ip not in prevPlugs:
-            return newPlugs[ip]
+            return newPlugs[ip],ip
 
 #connect a plug to the devices network
 #returns the plug instance after connected
@@ -141,6 +141,7 @@ async def connectPlug(plugSSID,homeNet,homePass,currPlugs):
         if(connectTo(plugSSID)):
             plugsOnNet = await getPlugsOnNet()
             await connPlugToHome(plugsOnNet.values(),homeNet,homePass)
+            sleep(5)
             connectTo(homeNet,homePass)
 
             return await detectNewPlug(currPlugs)
@@ -183,17 +184,19 @@ async def scanForPlugs(homePass):
 
 # FLASK METHODS TO MAKE:
 
-#method to display all available smart plug networks
-    #user chooses which smart plug to connect
-
-#method to take SSID, returns plug info to plugProfile once connected
-    #info includes plug IP, MAC, Model
-    #once connected, calls method that repeatedly reads power usage (readSingle) (ensureFuture)
 
 #method to read power usage and send to db
     #readSingle, ensureFuture
 
 #method to change alias of plug to plugProfile name
+
+#method to get all possible home networks
+    #all non SP networks
+    #allow user to choose
+
+    #might not need this, just connect to whatever PI is on using currNEtwork from getSSIDS
+
+
 
 
 
@@ -211,17 +214,34 @@ async def getPlugsToConnect():
 
     return dumps(listOfPlugs)
 
-async def connToOne(homePass):
-    plugsToConnect,homeNet,found = findSpSSIDs()
-    print("checking for new smart plugs")
+async def getConnectedPlugs():
+    connectedPlugs = await getPlugsOnNet()
+    ssidList = ""
 
-    if(found):
-        print("found new smart plug")
-        ssid = plugsToConnect[0]
+    for ip in connectedPlugs:
+        usefulMac = connectedPlugs[ip].hw_info['mac'][12:]
+        ssidList = ssidList + "TP-LINK_Smart Plug_" + usefulMac[:2] + usefulMac[3:] + "|"
+
+    ssidList = ssidList[:-1]
+
+    return dumps(ssidList)
+
+async def connOnePlug(homePass,homeNet,plugSSID):
+
+    currPlugs = await getPlugsOnNet()
+
+    if(connectTo(plugSSID)):
         plugsOnNet = await getPlugsOnNet()
-        plug = await connectPlug(ssid,homeNet,homePass,plugsOnNet)
-        if(plug):
-            asyncio.ensure_future(readSingle(plug),loop=event_loop)
+        await connPlugToHome(plugsOnNet.values(),homeNet,homePass)
+        connectTo(homeNet,homePass)
+
+        newPlug,ip = await detectNewPlug(currPlugs)
+
+    plugInfoStr = ip + "|" + newPlug.hw_info['mac']
+
+    return dumps(plugInfoStr)
+
+
 
 
 async def getUsageTest(ip):
