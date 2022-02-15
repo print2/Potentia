@@ -1,19 +1,17 @@
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
+import java.util.*;
 
-public class plugProfile{
+public class plugProfile extends FlaskExecutor{
     private String name;
     private String location;
     private applianceProfile appliance;
+    private String description;
     private boolean poweredOn;
     private float currUsage;
 
     private String plugIP;
     private String plugMAC;
-    private String plugModel;
+
+    private boolean connectedToPlug = false;
 
     plugProfile(String name){
         this.name = name;
@@ -29,10 +27,11 @@ public class plugProfile{
         this.appliance = appliance;
     }
 
-    plugProfile(String name, String location, applianceProfile appliance){
+    plugProfile(String name, String location, applianceProfile appliance, String description){
         this.name = name;
         this.location = location;
         this.appliance = appliance;
+        this.description = description;
     }
 
     public String getName(){
@@ -95,65 +94,38 @@ public class plugProfile{
         this.plugMAC = mac;
     }
 
-    public String getModel(){
-        return plugModel;
+    public Boolean getConnected(){
+        return this.connectedToPlug;
     }
 
-    public void setModel(String model){
-        this.plugModel = model;
+    public void setConnected(Boolean connected){
+        this.connectedToPlug = connected;
     }
 
-    public void changePhysicalPlug(String ip, String mac, String model){
+    public void changePhysicalPlug(String ip, String mac){
         setIP(ip);
         setMAC(mac);
-        setModel(model);
-    }
-
-    private String execFlaskMethod(String methodName, ArrayList<String> parameters){
-        String ip = "192.168.43.134:5000";
-        String accessUrl = "http://" + ip +"/" + methodName + "/";
-        for (String parameter : parameters){
-            accessUrl = accessUrl + parameter + "&";
-        }
-        if(parameters.size() > 0){
-            accessUrl = accessUrl.substring(0,accessUrl.length() -1);
-        }
-
-        try{
-            URL url = new URL(accessUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-            if(conn.getResponseCode() != 200){
-                throw new RuntimeException ("Failed : HTTP error code: " + conn.getResponseCode());
-            }
-            
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            
-            String output;
-            System.out.println("Output from server ... \n");
-            while ((output = br.readLine()) != null){
-                System.out.println(output);
-            }
-
-            conn.disconnect();
-
-            return output;
-
-        } catch (MalformedURLException e){
-            e.printStackTrace();
-            return "failed MURL";
-        } catch(IOException e){
-            e.printStackTrace();
-            return "failed IO";
-        }
-
     }
 
     public String retrieveCurrUsage(){
         ArrayList<String> params = new ArrayList<>();
         params.add(this.plugIP);
         return execFlaskMethod("usageTest",params);
+    }
+
+    public void connectPlug(String password, String network, String ssid){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(password.replace(' ','~'));
+        params.add(network.replace(' ','~'));
+        params.add(ssid.replace(' ','~'));
+
+        String plugInfo = execFlaskMethod("connectSingle",params);
+        ArrayList<String> infoList = stringToList(plugInfo);
+
+        this.plugIP = infoList.get(0);
+        this.plugMAC = infoList.get(1);
+
+        this.connectedToPlug = true;
     }
 
     //set timers
