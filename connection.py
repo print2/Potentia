@@ -180,7 +180,7 @@ async def scanForPlugs(homePass):
 
     while True:
         await connToAll(homePass)
-        await asyncio.sleep(5)
+        await asyncio.sleep(30)
 
 # FLASK METHODS TO MAKE:
 
@@ -196,11 +196,13 @@ async def scanForPlugs(homePass):
 
     #might not need this, just connect to whatever PI is on using currNEtwork from getSSIDS
 
-
+    #make new file, keep connection working
 
 
 
 # FLASK METHODS:
+
+#uses getSSID()
 
 async def getPlugsToConnect():
     plugsToConnect,homeNet,found = findSpSSIDs()
@@ -258,6 +260,8 @@ async def asyncTurnPlugOn(ip):
     plug = SmartPlug(ip)
     await plug.turn_on()
     await plug.update()
+
+
 
 def main():
     global event_loop

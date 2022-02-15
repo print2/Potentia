@@ -16,6 +16,7 @@ public class appDriver extends FlaskExecutor{
     private applianceProfile washingMachine = new applianceProfile("Washing Machine",false,240,120);
 
     private ArrayList<applianceProfile> applianceList = new ArrayList<>();
+    private ArrayList<plugProfile> plugProfileList = new ArrayList<>();
 
     public appDriver(){
         applianceList.add(fridge);
@@ -49,5 +50,28 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> connectedList = stringToList(connectedString);
 
         return connectedList;
+    }
+
+    public void addPlugProfile(plugProfile plug){
+        plugProfileList.add(plug);
+    }
+
+    public void removePlugProfile(plugProfile plug){
+        plugProfileList.remove(plug);
+    }
+
+    public plugProfile getPlugByName(String profileName){
+        for (plugProfile plug:plugProfileList){
+            if (plug.getName().equals(profileName)){
+                return plug;
+            }
+        }
+        return null;
+    }
+
+    public String getNetwork(){
+        ArrayList<String> params = new ArrayList<>();
+        String network = execFlaskMethod("getNetwork",params);
+        return network;
     }
 }

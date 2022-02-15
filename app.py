@@ -191,5 +191,10 @@ def connectSingle(password,network,ssid):
     plugInfo = asyncio.run(connOnePlug(password.replace('~',' '),network.replace('~',' '),ssid.replace('~',' '))) #params cant contain ~ or this failes
     return plugInfo
 
+@app.route('/getNetwork/',methods=["GET"])
+def getPiNetwork():
+    _ssids,currSSID = getSSIDs()
+    return dumps(currSSID)
+
 if __name__=='__main__':
   app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')
