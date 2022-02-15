@@ -1,4 +1,5 @@
 from readline import parse_and_bind
+from sqlite3 import Timestamp
 from pymongo import MongoClient
 from datetime import datetime
 from pprint import pprint as p
@@ -17,13 +18,12 @@ cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongo
 db = cluster.test
 db=cluster["Plugs"]
 collection=db["UsageData"]
-#@dispatch(str,datetime,datetime)
+
 @app.route('/getplugdata/<name>&<timeStart>&<timeEnd>', methods=["GET"])
 def getPlugData(name,timeStart,timeEnd):
     #gets all readings for a given plug between a given time range
-    print(timeStart[4:2])
-    t1=datetime(int(timeStart[:4]), int(timeStart[4:6]), int(timeStart[6:8]), int(timeStart[8:10]), int(timeStart[10:12]), int(timeStart[12:14])+int(timeStart[14:20]))
-    t2=datetime(int(timeEnd[:4]), int(timeEnd[4:6]), int(timeEnd[6:8]), int(timeEnd[8:10]), int(timeEnd[10:12]), int(timeEnd[12:14])+int(timeStart[14:20]))
+    t1=datetime(int(timeStart[:4]), int(timeStart[4:6]), int(timeStart[6:8]), int(timeStart[8:10]), int(timeStart[10:12]), int(timeStart[12:14]), int(timeStart[14:20]))
+    t2=datetime(int(timeEnd[:4]), int(timeEnd[4:6]), int(timeEnd[6:8]), int(timeEnd[8:10]), int(timeEnd[10:12]), int(timeEnd[12:14]), int(timeEnd[14:20]))
     return dumps(collection.find({
     "name": name,
     "$and": [{"date/time": {"$gt": t1}}, {"date/time": {"$lt": t2}}]}))
@@ -55,11 +55,65 @@ def getMonth(currDay,currMonth):
         return True
     else:
          return False
-@app.route('/getdatapoints/<name>&<timeStart>&<timeEnd>', methods=["GET"])
-def getDataPoints(name,timeStart,timeEnd):
+
+def emptyList(points):
+    #returns list of zeros of a given length
+    ret=[]
+    for i in range(points):
+        ret.append(0)
+    return ret
+
+def timeVal(timestr):
+    #gets integer value for time string
+    if len(timestr)>=23:
+        return int(datetime(int(timestr[:4]), int(timestr[5:7]), int(timestr[8:10]), int(timestr[11:13]), int(timestr[14:16]), int(timestr[17:19]),int(timestr[20:23])).strftime("%Y%m%d%H%M%S"))
+    else:
+        return int(datetime(int(timestr[:4]), int(timestr[4:6]), int(timestr[6:8]), int(timestr[8:10]), int(timestr[10:12]), int(timestr[12:14]),int(timestr[14:20])).strftime("%Y%m%d%H%M%S"))
+
+@app.route('/getdatapoints/<name>&<timeStart>&<timeEnd>&<numberOfPoints>', methods=["GET"])
+def getDataPoints(name,timeStart,timeEnd, numberOfPoints):
+    #get all readings and produce an average for each portion of the time period
+    #to be displayed on the graph
+    data=requests.get('http://0.0.0.0:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
+    #data=getPlugData(name,timeStart,timeEnd)
+    data=json.loads(data.text)
+    #data=json.loads(data)
+    timeStart=timeVal(timeStart)
+    timeEnd=timeVal(timeEnd)
+    numberOfPoints=int(numberOfPoints)
+
+    i=0
+    ret=[]
+
+    if len(data)==0:
+        return dumps(emptyList(int(numberOfPoints)))
+
+    period=(timeEnd-timeStart)/int(numberOfPoints)#gets time in ms
+    currTime=timeStart+period
+
+    while numberOfPoints>0:#calculate each data point
+        ptscount=0
+        ptstotal=0
+
+        while timeVal(data[i]["date/time"]["$date"])<currTime:#collect all data in given portion of time period
+            print(timeVal(data[i]["date/time"]["$date"]))
+            print(currTime)
+            ptscount+=1
+            ptstotal+=data[i]["Power"]
+            i+=1
+            if i>=len(data):
+                ret.append(ptstotal/ptscount)
+                numberOfPoints-=1
+                return dumps(ret+emptyList(numberOfPoints))
+        currTime+=period
+        ret.append(ptscount/ptstotal)
+        numberOfPoints-=1
+
+@app.route('/getdatapoints2/<name>&<timeStart>&<timeEnd>', methods=["GET"])
+def getDataPoints2(name,timeStart,timeEnd):
     #get all readings and produce an average for each hour during the time period
     #to be displayed on the graph
-    data=requests.get('http://127.0.0.1:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
+    data=requests.get('http://0.0.0.0:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
     data=json.loads(data.text)
     currHour=int(timeStart[8:10])
     currDay= int(timeStart[6:8])
@@ -166,4 +220,4 @@ def generateReport(name,timeStart,timeEnd):
 #    p(x)
 
 if __name__=='__main__':
-  app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')
+    app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')
