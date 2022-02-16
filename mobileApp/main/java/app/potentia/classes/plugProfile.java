@@ -62,17 +62,7 @@ public class plugProfile extends FlaskExecutor{
         return poweredOn;
     }
 
-    public void togglePower(){
-        poweredOn = !poweredOn;
-    }
-
-    public void powerOff(){
-        poweredOn = false;
-    }
-
-    public void powerOn(){
-        poweredOn = true;
-    }
+    
 
     public float getCurrUsage(){
         return currUsage;
@@ -107,6 +97,35 @@ public class plugProfile extends FlaskExecutor{
         setMAC(mac);
     }
 
+    public void togglePower(){
+        if(poweredOn){
+            powerOff();
+        }
+        else{
+            powerOn();
+        }
+    }
+
+    public void powerOff(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plugIP);
+
+        String result = execFlaskMethod("turnOff",params);
+        if(result.equals("Turned Off")){
+            poweredOn = false;
+        }
+    }
+
+    public void powerOn(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plugIP);
+
+        String result = execFlaskMethod("turnOn",params);
+        if(result.equals("Turned On")){
+            poweredOn = true;
+        }
+    }
+
     public String retrieveCurrUsage(){
         ArrayList<String> params = new ArrayList<>();
         params.add(this.plugIP);
@@ -126,6 +145,16 @@ public class plugProfile extends FlaskExecutor{
         this.plugMAC = infoList.get(1);
 
         this.connectedToPlug = true;
+
+        changePlugAlias(name);
+    }
+
+    public void changePlugAlias(String alias){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(this.plugIP);
+        params.add(alias.replace(' ','~'));
+
+        String result = execFlaskMethod("changeAlias",params);
     }
 
     //set timers

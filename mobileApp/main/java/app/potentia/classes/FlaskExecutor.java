@@ -29,8 +29,13 @@ public class FlaskExecutor {
             
             String output = br.readLine();
             System.out.println("Output from server ... \n");
+            System.out.println(output);
 
             conn.disconnect();
+
+            if(output.charAt(0) == '"'){
+                output = output.substring(1,output.length()-1);
+            }
 
             return output;
 
@@ -47,13 +52,10 @@ public class FlaskExecutor {
         ArrayList<String> list = new ArrayList<>();
 
         int cutoff = string.indexOf('|');
-        if(cutoff == -1){
-            string = string.substring(1,string.length()-1);
-        }
 
         while (cutoff != -1){
-            list.add(string.substring(1,cutoff));
-            string = string.substring(cutoff+1,string.length()-1);
+            list.add(string.substring(0,cutoff));
+            string = string.substring(cutoff+1,string.length());
             cutoff = string.indexOf('|');
         }
 

@@ -190,13 +190,9 @@ async def scanForPlugs(homePass):
 
 #method to change alias of plug to plugProfile name
 
-#method to get all possible home networks
-    #all non SP networks
-    #allow user to choose
+#make new file, keep connection working
 
-    #might not need this, just connect to whatever PI is on using currNEtwork from getSSIDS
-
-    #make new file, keep connection working
+#method to change alias
 
 
 
@@ -235,6 +231,7 @@ async def connOnePlug(homePass,homeNet,plugSSID):
     if(connectTo(plugSSID)):
         plugsOnNet = await getPlugsOnNet()
         await connPlugToHome(plugsOnNet.values(),homeNet,homePass)
+        sleep(1)
         connectTo(homeNet,homePass)
 
         newPlug,ip = await detectNewPlug(currPlugs)
@@ -249,17 +246,24 @@ async def connOnePlug(homePass,homeNet,plugSSID):
 async def getUsageTest(ip):
     plug = SmartPlug(ip)
     await plug.update()
-    return dumps(await plug.current_consumption())
+    return dumps("%s"%(await plug.current_consumption()))
 
 async def asyncTurnPlugOff(ip):
     plug = SmartPlug(ip)
     await plug.update()
     await plug.turn_off()
+    return dumps("Turned Off")
 
 async def asyncTurnPlugOn(ip):
     plug = SmartPlug(ip)
     await plug.turn_on()
     await plug.update()
+    return dumps("Turned On")
+
+async def changeAlias(ip,alias):
+    plug = SmartPlug(ip)
+    await plug.set_alias(alias)
+    return dumps("Changed Alias")
 
 
 

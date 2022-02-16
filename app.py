@@ -168,13 +168,13 @@ def usageTest(ip):
 
 @app.route('/turnOff/<ip>',methods=["GET"])
 def turnPlugOff(ip):
-    asyncio.run(asyncTurnPlugOff(ip))
-    return dumps('test')
+    result = asyncio.run(asyncTurnPlugOff(ip))
+    return result
 
 @app.route('/turnOn/<ip>',methods=["GET"])
 def turnPlugOn(ip):
-    asyncio.run(asyncTurnPlugOn(ip))
-    return dumps('Test')
+    result = asyncio.run(asyncTurnPlugOn(ip))
+    return result
 
 @app.route('/getUnconnected/',methods=["GET"])
 def getUnconnected():
@@ -195,6 +195,11 @@ def connectSingle(password,network,ssid):
 def getPiNetwork():
     _ssids,currSSID = getSSIDs()
     return dumps(currSSID)
+
+@app.route('/changeAlias/<ip>&<alias>',methods=["GET"])
+def changePlugAlias(ip,alias):
+    result = asyncio.run(changeAlias(ip,alias.replace("~"," ")))
+    return result
 
 if __name__=='__main__':
   app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')
