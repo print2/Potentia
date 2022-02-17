@@ -201,5 +201,10 @@ def changePlugAlias(ip,alias):
     result = asyncio.run(changeAlias(ip,alias.replace("~"," ")))
     return result
 
+@app.route('/readUsage/<ip>',methods=["GET"])
+def readPlugUsage(ip):
+    result = asyncio.run(readPlugData(ip))
+    return result
+
 if __name__=='__main__':
-  app.run(port=5000,host='0.0.0.0')#,ssl_context='adhoc')
+    app.run(port=5000,host='0.0.0.0')

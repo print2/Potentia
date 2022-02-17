@@ -105,26 +105,21 @@ async def connPlugToHome(plugs,ssid,password):
 
 #assigns an alias to a given plug and then connects this plug to a given network
 async def actOnPlugs(plug,ssid,password):
-    alias = input("Give this plug a name: ")
-    await plug.set_alias(alias)
     await plug.wifi_join(ssid,password)
 
 #reads the current power usage of a given plug, and posts it to our mongoDB
 async def readSingle(plug):
-    while(True):
-        try:
-            await plug.update()
-            power = await plug.current_consumption()
-            
-            print(plug.alias + " is currently using: " + str(power) + " W at "+ datetime.now().strftime("%H: %M: %S:"))
-            usefulMac = plug.hw_info['mac'][12:]
+    try:
+        await plug.update()
+        power = await plug.current_consumption()
+        
+        print(plug.alias + " is currently using: " + str(power) + " W at "+ datetime.now().strftime("%H: %M: %S:"))
+        usefulMac = plug.hw_info['mac'][12:]
 
-            post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
-            collection.insert_one(post)
-        except:
-            pass
-
-        await asyncio.sleep(1)
+        post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
+        collection.insert_one(post)
+    except:
+        pass
 
 #detects any newly connected plug on this network
 #returns this plug instance
@@ -188,11 +183,7 @@ async def scanForPlugs(homePass):
 #method to read power usage and send to db
     #readSingle, ensureFuture
 
-#method to change alias of plug to plugProfile name
-
 #make new file, keep connection working
-
-#method to change alias
 
 
 
@@ -240,9 +231,6 @@ async def connOnePlug(homePass,homeNet,plugSSID):
 
     return dumps(plugInfoStr)
 
-
-
-
 async def getUsageTest(ip):
     plug = SmartPlug(ip)
     await plug.update()
@@ -265,6 +253,10 @@ async def changeAlias(ip,alias):
     await plug.set_alias(alias)
     return dumps("Changed Alias")
 
+async def readPlugData(ip):
+    plug = SmartPlug(ip)
+    await readSingle(plug)
+    return dumps("Done")
 
 
 def main():

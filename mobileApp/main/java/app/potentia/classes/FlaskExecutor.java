@@ -28,8 +28,6 @@ public class FlaskExecutor {
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             
             String output = br.readLine();
-            System.out.println("Output from server ... \n");
-            System.out.println(output);
 
             conn.disconnect();
 
@@ -40,10 +38,10 @@ public class FlaskExecutor {
             return output;
 
         } catch (MalformedURLException e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return "failed MURL";
         } catch(IOException e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return "failed IO";
         }
     }

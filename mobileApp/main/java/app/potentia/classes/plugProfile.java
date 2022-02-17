@@ -62,8 +62,6 @@ public class plugProfile extends FlaskExecutor{
         return poweredOn;
     }
 
-    
-
     public float getCurrUsage(){
         return currUsage;
     }
@@ -147,6 +145,12 @@ public class plugProfile extends FlaskExecutor{
         this.connectedToPlug = true;
 
         changePlugAlias(name);
+
+
+
+        plugReader newReader = new plugReader(this);
+        Thread newThread = new Thread(newReader);
+        newThread.start();
     }
 
     public void changePlugAlias(String alias){
@@ -156,6 +160,25 @@ public class plugProfile extends FlaskExecutor{
 
         String result = execFlaskMethod("changeAlias",params);
     }
+
+    public void startReading(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plugIP);
+
+        while (true){
+            System.out.println("looping" + this.name);
+            try{
+                String result = execFlaskMethod("readUsage",params);
+
+                Thread.sleep(1000);
+            }
+            catch (Exception e){
+                System.out.println("Exception");
+            }
+        }
+        
+    }
+
 
     //set timers
 }
