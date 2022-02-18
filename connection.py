@@ -188,7 +188,7 @@ async def scanForPlugs(homePass):
 
 #make new file, keep connection working
 
-
+#getIsOn to be called when plugPRofile connects and set poweredOn correctly
 
 # FLASK METHODS:
 
@@ -260,6 +260,13 @@ async def readPlugData(ip):
     plug = SmartPlug(ip)
     await readSingle(plug)
     return dumps("Done")
+
+async def getIsOn(ip):
+    plug = SmartPlug(ip)
+    await plug.update()
+    if(plug.is_on):
+        return dumps("on")
+    return dumps("off")
 
 
 def main():

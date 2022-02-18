@@ -206,5 +206,10 @@ def readPlugUsage(ip):
     result = asyncio.run(readPlugData(ip))
     return result
 
+@app.route('/isOn/<ip>',methods=["GET"])
+def isOn(ip):
+    result = asyncio.run(getIsOn(ip))
+    return result
+
 if __name__=='__main__':
     app.run(port=5000,host='0.0.0.0')

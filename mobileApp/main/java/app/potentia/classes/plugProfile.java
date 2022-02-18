@@ -163,6 +163,7 @@ public class plugProfile extends FlaskExecutor{
         this.connectedToPlug = true;
 
         changePlugAlias(name);
+        this.poweredOn = isPlugOn();
 
         plugReader newReader = new plugReader(this);
         Thread newThread = new Thread(newReader);
@@ -184,6 +185,18 @@ public class plugProfile extends FlaskExecutor{
         System.out.println("looping" + this.name);
 
         String result = execFlaskMethod("readUsage",params);
+    }
+
+    public boolean isPlugOn(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(this.plugIP);
+
+        String result = execFlaskMethod("isOn",params);
+
+        if(result.equals("on")){
+            return true;
+        }
+        return false;
     }
 
 
