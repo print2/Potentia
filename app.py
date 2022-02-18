@@ -1,7 +1,7 @@
 from readline import parse_and_bind
 from sqlite3 import Timestamp
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
 from pprint import pprint as p
 from flask import Flask, request, jsonify
 import json
@@ -52,6 +52,14 @@ def getMonth(currDay,currMonth):
     else:
          return False
 
+def getDaysInMonths(months):
+    days=[31,28,31,30,31,30,31,31,30,31,30,31]
+    total=0
+    for i in range(months-1):
+        total+=days[i]
+    return total
+
+
 def emptyList(points):
     #returns list of zeros of a given length
     ret=[]
@@ -59,23 +67,34 @@ def emptyList(points):
         ret.append(0)
     return ret
 
-def timeVal(timestr):
+def timeVal(timestr,option):
     #gets integer value for time string
-    if len(timestr)>=23:
+    if option==2:
+        for i in range(24-len(timestr)):#ensure time str always has 24 length
+            timestr+="0"
         return int(datetime(int(timestr[:4]), int(timestr[5:7]), int(timestr[8:10]), int(timestr[11:13]), int(timestr[14:16]), int(timestr[17:19]),int(timestr[20:23])).strftime("%Y%m%d%H%M%S"))
     else:
         return int(datetime(int(timestr[:4]), int(timestr[4:6]), int(timestr[6:8]), int(timestr[8:10]), int(timestr[10:12]), int(timestr[12:14]),int(timestr[14:20])).strftime("%Y%m%d%H%M%S"))
 
+def getDelta(timestr,option):
+    if option==1:
+        return timedelta(days=int(timestr[6:8])+getDaysInMonths(int(timestr[4:6]))+365*int(timestr[:4]),hours=int(timestr[8:10]),minutes=int(timestr[10:12]),seconds=int(timestr[12:14]),milliseconds=int(timestr[14:20]))
+    else:
+        for i in range(24-len(timestr)):#ensure time str always has 24 length
+            timestr+="0"
+        return timedelta(days=int(timestr[8:10])+getDaysInMonths(int(timestr[5:7]))+365*int(timestr[:4]), hours=int(timestr[11:13]), minutes=int(timestr[14:16]), seconds=int(timestr[17:19]), milliseconds=int(timestr[20:23]))
 @app.route('/getdatapoints/<name>&<timeStart>&<timeEnd>&<numberOfPoints>', methods=["GET"])
 def getDataPoints(name,timeStart,timeEnd, numberOfPoints):
     #get all readings and produce an average for each portion of the time period
     #to be displayed on the graph
     data=requests.get('http://0.0.0.0:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
     #data=getPlugData(name,timeStart,timeEnd)
+    #data=getPlugData(name,timeStart,timeEnd)
     data=json.loads(data.text)
     #data=json.loads(data)
-    timeStart=timeVal(timeStart)
-    timeEnd=timeVal(timeEnd)
+    print(timeStart)
+    timeStart=getDelta(timeStart,1)
+    timeEnd=getDelta(timeEnd,1)
     numberOfPoints=int(numberOfPoints)
 
     i=0
@@ -86,14 +105,16 @@ def getDataPoints(name,timeStart,timeEnd, numberOfPoints):
 
     period=(timeEnd-timeStart)/int(numberOfPoints)#gets time in ms
     currTime=timeStart+period
-
-    while numberOfPoints>0:#calculate each data point
+    if currTime<getDelta(data[i]["date/time"]["$date"],2):
+        print(currTime)
+        print(data[i]["date/time"]["$date"])
+        print(getDelta(data[i]["date/time"]["$date"],2))
+        return dumps([])
+    while True:#calculate each data point
         ptscount=0
         ptstotal=0
-
-        while timeVal(data[i]["date/time"]["$date"])<currTime:#collect all data in given portion of time period
-            print(timeVal(data[i]["date/time"]["$date"]))
-            print(currTime)
+        print(currTime)
+        while getDelta(data[i]["date/time"]["$date"],2)<currTime:#collect all data in given portion of time period
             ptscount+=1
             ptstotal+=data[i]["Power"]
             i+=1
@@ -102,7 +123,10 @@ def getDataPoints(name,timeStart,timeEnd, numberOfPoints):
                 numberOfPoints-=1
                 return dumps(ret+emptyList(numberOfPoints))
         currTime+=period
-        ret.append(ptscount/ptstotal)
+        if ptscount==0:
+            ret.append(0)
+        else:
+            ret.append(ptstotal/ptscount)
         numberOfPoints-=1
 
 @app.route('/getdatapoints2/<name>&<timeStart>&<timeEnd>', methods=["GET"])
@@ -178,13 +202,17 @@ def changePlugSettings():
     #take parameters with all the settings for the plug
     pass
 
-def getConnectPlugs():
-    #return jsonify(plugs['name'])
+def checkForHighUsage():
+    #called once a minute
+    #call getConnected
+    #for plug in list, check data usage in last hour
+    #if sudden increase from low level (not 0), recommend plug turned off (if settings allow for that)
+    #return plug name and data points for usage in last hour
+    #user then receives a notification asking them if they want to turn off- turn off called if option chosen, or no option chosen within 10 minutes
     pass
 
-
-def getHighestUsage(data):
-    #identify times when used- return hourly period during the day where most usage
+def usageByHour(data):
+    #identify times when used- return average usage per hour
     #assumes plugs are left on constantly
     ret=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     readings=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -200,13 +228,14 @@ def getHighestUsage(data):
     return ret
 
 
+
 @app.route('/generatereport/<name>&<timeStart>&<timeEnd>', methods=["GET"])
 def generateReport(name,timeStart,timeEnd):
     data=requests.get('http://192.168.43.134:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
     data=json.loads(data.text)
-    return dumps(getHighestUsage(data))
+    return dumps(getUsageByHour(data))
     #return dumps(usageByHour)
-    # for each type of device have list of reasons why could be using lot of power (either a lot in short period of time or more than usual over longer period)- items can be grouped together
+    # for each type of device have list of reasons why could be using lot of power (either a lot in short period of time or more than usual over longer period)- items can be grouped together- Joel research
     #currentavg=calculateAverageUsage(name,timeStart,timeEnd)*(timeEnd-timeStart)#compare total used this time period to previous time period (e.g. this month to last month)
     #previousavg=calculateAverageUsage(name,timeStart-(timeEnd-timeStart),timeStart)
 #generateReport("test1","20210120134725000000","20230120134733186000")
