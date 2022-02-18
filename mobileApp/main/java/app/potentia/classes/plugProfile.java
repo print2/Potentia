@@ -13,6 +13,8 @@ public class plugProfile extends FlaskExecutor{
 
     private boolean connectedToPlug = false;
 
+    private long timeTurnedOn;
+
     plugProfile(String name){
         this.name = name;
     }
@@ -122,6 +124,22 @@ public class plugProfile extends FlaskExecutor{
         if(result.equals("Turned On")){
             poweredOn = true;
         }
+
+        this.timeTurnedOn = System.currentTimeMillis() / 60000;
+    }
+
+    public boolean isProlongedOnNotify(){
+        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilNotify()){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isProlongedOnDisable(){
+        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilDisable()){
+            return true;
+        }
+        return false;
     }
 
     public String retrieveCurrUsage(){
@@ -145,8 +163,6 @@ public class plugProfile extends FlaskExecutor{
         this.connectedToPlug = true;
 
         changePlugAlias(name);
-
-
 
         plugReader newReader = new plugReader(this);
         Thread newThread = new Thread(newReader);
