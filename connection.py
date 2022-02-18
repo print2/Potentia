@@ -109,17 +109,20 @@ async def actOnPlugs(plug,ssid,password):
 
 #reads the current power usage of a given plug, and posts it to our mongoDB
 async def readSingle(plug):
-    try:
-        await plug.update()
-        power = await plug.current_consumption()
-        
-        print(plug.alias + " is currently using: " + str(power) + " W at "+ datetime.now().strftime("%H: %M: %S:"))
-        usefulMac = plug.hw_info['mac'][12:]
+    while True:
+        try:
+            await plug.update()
+            power = await plug.current_consumption()
+            
+            print(plug.alias + " is currently using: " + str(power) + " W at "+ datetime.now().strftime("%H: %M: %S:"))
+            usefulMac = plug.hw_info['mac'][12:]
 
-        post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
-        collection.insert_one(post)
-    except:
-        pass
+            post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
+            collection.insert_one(post)
+        except:
+            pass
+
+        await asyncio.sleep(1)
 
 #detects any newly connected plug on this network
 #returns this plug instance

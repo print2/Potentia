@@ -165,18 +165,9 @@ public class plugProfile extends FlaskExecutor{
         ArrayList<String> params = new ArrayList<>();
         params.add(plugIP);
 
-        while (true){
-            System.out.println("looping" + this.name);
-            try{
-                String result = execFlaskMethod("readUsage",params);
+        System.out.println("looping" + this.name);
 
-                Thread.sleep(1000);
-            }
-            catch (Exception e){
-                System.out.println("Exception");
-            }
-        }
-        
+        String result = execFlaskMethod("readUsage",params);
     }
 
 

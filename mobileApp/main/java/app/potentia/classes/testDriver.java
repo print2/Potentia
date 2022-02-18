@@ -40,5 +40,7 @@ public class testDriver {
         // System.out.println(plug.getIP());
 
         // System.out.println(plug.retrieveCurrUsage());
+
+        System.out.println("End of Program")
     }
 }
