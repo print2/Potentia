@@ -105,13 +105,11 @@ async def connPlugToHome(plugs,ssid,password):
 
 #assigns an alias to a given plug and then connects this plug to a given network
 async def actOnPlugs(plug,ssid,password):
-    alias = input("Give this plug a name: ")
-    await plug.set_alias(alias)
     await plug.wifi_join(ssid,password)
 
 #reads the current power usage of a given plug, and posts it to our mongoDB
 async def readSingle(plug):
-    while(True):
+    while True:
         try:
             await plug.update()
             power = await plug.current_consumption()
@@ -188,17 +186,9 @@ async def scanForPlugs(homePass):
 #method to read power usage and send to db
     #readSingle, ensureFuture
 
-#method to change alias of plug to plugProfile name
+#make new file, keep connection working
 
-#method to get all possible home networks
-    #all non SP networks
-    #allow user to choose
-
-    #might not need this, just connect to whatever PI is on using currNEtwork from getSSIDS
-
-    #make new file, keep connection working
-
-
+#getIsOn to be called when plugPRofile connects and set poweredOn correctly
 
 # FLASK METHODS:
 
@@ -235,6 +225,7 @@ async def connOnePlug(homePass,homeNet,plugSSID):
     if(connectTo(plugSSID)):
         plugsOnNet = await getPlugsOnNet()
         await connPlugToHome(plugsOnNet.values(),homeNet,homePass)
+        sleep(1)
         connectTo(homeNet,homePass)
 
         newPlug,ip = await detectNewPlug(currPlugs)
@@ -243,24 +234,39 @@ async def connOnePlug(homePass,homeNet,plugSSID):
 
     return dumps(plugInfoStr)
 
-
-
-
 async def getUsageTest(ip):
     plug = SmartPlug(ip)
     await plug.update()
-    return dumps(await plug.current_consumption())
+    return dumps("%s"%(await plug.current_consumption()))
 
 async def asyncTurnPlugOff(ip):
     plug = SmartPlug(ip)
     await plug.update()
     await plug.turn_off()
+    return dumps("Turned Off")
 
 async def asyncTurnPlugOn(ip):
     plug = SmartPlug(ip)
     await plug.turn_on()
     await plug.update()
+    return dumps("Turned On")
 
+async def changeAlias(ip,alias):
+    plug = SmartPlug(ip)
+    await plug.set_alias(alias)
+    return dumps("Changed Alias")
+
+async def readPlugData(ip):
+    plug = SmartPlug(ip)
+    await readSingle(plug)
+    return dumps("Done")
+
+async def getIsOn(ip):
+    plug = SmartPlug(ip)
+    await plug.update()
+    if(plug.is_on):
+        return dumps("on")
+    return dumps("off")
 
 
 def main():

@@ -13,6 +13,8 @@ public class plugProfile extends FlaskExecutor{
 
     private boolean connectedToPlug = false;
 
+    private long timeTurnedOn;
+
     plugProfile(String name){
         this.name = name;
     }
@@ -62,18 +64,6 @@ public class plugProfile extends FlaskExecutor{
         return poweredOn;
     }
 
-    public void togglePower(){
-        poweredOn = !poweredOn;
-    }
-
-    public void powerOff(){
-        poweredOn = false;
-    }
-
-    public void powerOn(){
-        poweredOn = true;
-    }
-
     public float getCurrUsage(){
         return currUsage;
     }
@@ -107,6 +97,51 @@ public class plugProfile extends FlaskExecutor{
         setMAC(mac);
     }
 
+    public void togglePower(){
+        if(poweredOn){
+            powerOff();
+        }
+        else{
+            powerOn();
+        }
+    }
+
+    public void powerOff(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plugIP);
+
+        String result = execFlaskMethod("turnOff",params);
+        if(result.equals("Turned Off")){
+            poweredOn = false;
+        }
+    }
+
+    public void powerOn(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plugIP);
+
+        String result = execFlaskMethod("turnOn",params);
+        if(result.equals("Turned On")){
+            poweredOn = true;
+        }
+
+        this.timeTurnedOn = System.currentTimeMillis() / 60000;
+    }
+
+    public boolean isProlongedOnNotify(){
+        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilNotify()){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isProlongedOnDisable(){
+        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilDisable()){
+            return true;
+        }
+        return false;
+    }
+
     public String retrieveCurrUsage(){
         ArrayList<String> params = new ArrayList<>();
         params.add(this.plugIP);
@@ -126,7 +161,44 @@ public class plugProfile extends FlaskExecutor{
         this.plugMAC = infoList.get(1);
 
         this.connectedToPlug = true;
+
+        changePlugAlias(name);
+        this.poweredOn = isPlugOn();
+
+        plugReader newReader = new plugReader(this);
+        Thread newThread = new Thread(newReader);
+        newThread.start();
     }
+
+    public void changePlugAlias(String alias){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(this.plugIP);
+        params.add(alias.replace(' ','~'));
+
+        String result = execFlaskMethod("changeAlias",params);
+    }
+
+    public void startReading(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plugIP);
+
+        System.out.println("looping" + this.name);
+
+        String result = execFlaskMethod("readUsage",params);
+    }
+
+    public boolean isPlugOn(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(this.plugIP);
+
+        String result = execFlaskMethod("isOn",params);
+
+        if(result.equals("on")){
+            return true;
+        }
+        return false;
+    }
+
 
     //set timers
 }
