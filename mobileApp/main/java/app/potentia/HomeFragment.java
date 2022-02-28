@@ -1,5 +1,6 @@
 package app.potentia;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -19,8 +19,6 @@ import java.util.TimerTask;
 
 public class HomeFragment extends Fragment implements AdapterView.OnItemSelectedListener{
 
-    //need function to return plug object from given name
-
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -29,12 +27,13 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 //    private Button button;
     private Spinner dropdown;
     private TextView currentUsage;
-    private String string;
+    private String reading;
 
     private appDriver appDriver = new appDriver();
-    private ArrayList<String> connected = new ArrayList<String>();
+    private ArrayList<String> connectedList = new ArrayList<String>();
+    private plugProfile currentPlug = new plugProfile("Smart Plug 1");
+    private String currentName;
 
-    public plugProfile currentPlug;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,14 +43,16 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
 //        button = inflatedView.findViewById(R.id.button);
 //        button.setOnClickListener(this);
-        connected.add("Smart Plug 1");
+//        connected.add(currentPlug.getName());
 
-        //connected = appDriver.getConnectedPlugs();
+        currentPlug.setIP("192.168.43.28");
+
+        currentAsyncTask(currentPlug);
+
         currentUsage = inflatedView.findViewById(R.id.currentUsage);
         dropdown = inflatedView.findViewById(R.id.dropdown);
-        currentUsage.setText("*** kWh");
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(inflatedView.getContext(), android.R.layout.simple_spinner_item, connected) ; //?
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(inflatedView.getContext(), android.R.layout.simple_spinner_item, connectedList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown.setAdapter(adapter);
         dropdown.setOnItemSelectedListener(this);
@@ -61,47 +62,40 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
 //    @Override
 //    public void onClick(View view) {
-//        currentPlug.getIP();
-//        currUsageAsyncTask(currentPlug);
+//
 //    }
+
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
 
-        switch (position) {
-            case 0:
-                // Whatever you want to happen when the first item gets selected
-                break;
-            case 1:
-                // Whatever you want to happen when the second item gets selected
-                break;
-            case 2:
-                // Whatever you want to happen when the thrid item gets selected
-                break;
+        currentName = connectedList.get(position);
+        currentPlug = appDriver.getPlugByName(currentName);
 
-        }
+        currentAsyncTask(currentPlug);
     }
 
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-            //currUsageAsyncTask(currentPlug);
-        }
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        currentAsyncTask(currentPlug);
+    }
 
     public class Async extends AsyncTask<plugProfile, Void, String>{
 
         @Override
         protected String doInBackground(plugProfile... params) {
-            string = currentPlug.retrieveCurrUsage();
-            return string;
+            connectedList = appDriver.getConnectedPlugs();
+            reading = currentPlug.retrieveCurrUsage() + " W";
+            return reading;
         }
 
         @Override
         protected void onPostExecute(String result){
             currentUsage.setText(result);
         }
-
     }
 
-    private void currUsageAsyncTask(plugProfile plug) {
+    private void currentAsyncTask(plugProfile plug) {
 
         final Handler handler = new Handler();
         Timer timer = new Timer();
@@ -111,6 +105,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
+
                         Async update = (Async) new Async().execute(plug);
                     }
                 });
@@ -118,4 +113,5 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         };
         timer.schedule(task, 0, 1000);
     }
+
 }

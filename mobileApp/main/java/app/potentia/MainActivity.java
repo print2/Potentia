@@ -5,13 +5,14 @@ import android.view.MenuItem;
 import com.google.android.material.navigation.NavigationBarView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.*;
+import androidx.fragment.app.Fragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
 
     NavigationBarView navigationBarView;
 
     InfoFragment infoFragment = new InfoFragment();
-    PlugFragment plugFragment = new PlugFragment();
+    PlugFragmentMain plugFragment = new PlugFragmentMain();
     HomeFragment homeFragment = new HomeFragment();
     NotificationFragment notificationFragment = new NotificationFragment();
     SettingsFragment settingsFragment = new SettingsFragment();
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        switchFragment(homeFragment);
 
         navigationBarView = findViewById(R.id.bottomNavigationView);
         navigationBarView.setSelectedItemId(R.id.home);
@@ -30,21 +33,26 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.info:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, infoFragment).commit();
+                switchFragment(infoFragment);
                 return true;
             case R.id.plugs:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, plugFragment).commit();
+                switchFragment(plugFragment);
                 return true;
             case R.id.home:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+                switchFragment(homeFragment);
                 return true;
             case R.id.notif:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, notificationFragment).commit();
+                switchFragment(notificationFragment);
                 return true;
             case R.id.settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, settingsFragment).commit();
+                switchFragment(settingsFragment);
                 return true;
         }
         return false;
+    }
+
+    private void switchFragment(Fragment fragment){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container,fragment).commit();
     }
 }

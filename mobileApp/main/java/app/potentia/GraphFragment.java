@@ -58,10 +58,10 @@ public class GraphFragment extends Fragment {
     public void createGraph(){
         series = new LineGraphSeries<>();
         x = -5.0;
-        for(int i = 0; i < 500; i++){
+        for(int i = 0; i < 24; i++){
             x = x + 0.1;
             y = Math.sin(x);
-            series.appendData(new DataPoint(x,y), true, 500);
+            series.appendData(new DataPoint(x,y), true, 24);
         }
         graph.addSeries(series);
     }
