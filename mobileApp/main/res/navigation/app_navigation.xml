@@ -12,9 +12,9 @@
         tools:layout="@layout/fragment_info" />
     <fragment
         android:id="@+id/navigation_plug"
-        android:name="app.potentia.PlugFragment"
+        android:name="app.potentia.PlugFragmentMain"
         android:label="@string/s_plugs"
-        tools:layout="@layout/fragment_plug" />
+        tools:layout="@layout/fragment_plugmain" />
     <fragment
         android:id="@+id/navigation_home"
         android:name="app.potentia.HomeFragment"
