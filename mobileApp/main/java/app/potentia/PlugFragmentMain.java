@@ -1,23 +1,22 @@
 package app.potentia;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class PlugFragmentMain extends Fragment{
 
@@ -25,36 +24,43 @@ public class PlugFragmentMain extends Fragment{
         // Required empty public constructor
     }
 
+    CreatePlugFragment createPlugFragment = new CreatePlugFragment();
+
     private View inflatedView;
-    private ListView plugList;
+    private ListView listView;
     private appDriver appDriver = new appDriver();
 
     private ArrayList <plugProfile> allPlugs = new ArrayList<plugProfile>();
+    private ArrayList <applianceProfile> allAppliances = new ArrayList<applianceProfile>();
 
-    private ArrayList <String> plugNames = new ArrayList<String>();
-    private ArrayList <String> plugAppliances = new ArrayList<String>();
-    private ArrayList <String> plugTimers = new ArrayList<String>();
-    private ArrayList <Boolean> plugPowers = new ArrayList<Boolean>();
-
-//    private String plugNames[];
-//    private String plugAppliances[];
-//    private String plugTimers[];
-//    private Boolean plugPowers[];
-
-    private TextView test;
+    private FloatingActionButton add;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.inflatedView = inflater.inflate(R.layout.fragment_plugmain, container, false);
 
-        applianceProfile fridge = new applianceProfile("Fridge", true);
-        plugProfile plug1 = new plugProfile("Plug1", fridge);
-        allPlugs.add(plug1);
+        allAppliances = appDriver.getApplianceList();
 
-        plugList = inflatedView.findViewById(R.id.plugList);
+        //testing
+        plugProfile plug1 = new plugProfile("Plug1", allAppliances.get(0));
+        plugProfile plug2 = new plugProfile("Plug2", allAppliances.get(1));
+        appDriver.addPlugProfile(plug1);
+        appDriver.addPlugProfile(plug2);
+
+        allPlugs = appDriver.getPlugList();
+
+        listView = inflatedView.findViewById(R.id.plugList);
         CustomAdapter adapter = new CustomAdapter(inflatedView.getContext(), allPlugs);
-        plugList.setAdapter(adapter);
+        listView.setAdapter(adapter);
+
+        add = inflatedView.findViewById(R.id.fab);
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity) getActivity()).forwardFragment(createPlugFragment);
+            }
+        });
 
         return inflatedView;
     }
@@ -92,9 +98,9 @@ public class PlugFragmentMain extends Fragment{
             //add connected button
 
             view = inflater.inflate(R.layout.pluglist_view, viewGroup, false);
-            TextView name = (TextView) view.findViewById(R.id.plugName);
-            TextView appliance = (TextView) view.findViewById(R.id.applianceName);
-            TextView timer = (TextView) view.findViewById(R.id.timer);
+            TextView name = view.findViewById(R.id.plugName);
+            TextView appliance = view.findViewById(R.id.applianceName);
+            TextView timer = view.findViewById(R.id.timer);
 
             plugProfile x = allPlugs.get(i);
 

@@ -1,11 +1,13 @@
 package app.potentia;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import com.google.android.material.navigation.NavigationBarView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
 
@@ -51,8 +53,25 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         return false;
     }
 
-    private void switchFragment(Fragment fragment){
+    public void switchFragment(Fragment fragment){
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container,fragment).commit();
+    }
+
+    public void forwardFragment(Fragment fragment){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    @Override
+    public void onBackPressed(){
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

@@ -24,7 +24,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     private View inflatedView;
-//    private Button button;
     private Spinner dropdown;
     private TextView currentUsage;
     private String reading;
@@ -41,10 +40,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         this.inflatedView = inflater.inflate(R.layout.fragment_home, container, false);
 
-//        button = inflatedView.findViewById(R.id.button);
-//        button.setOnClickListener(this);
-//        connected.add(currentPlug.getName());
-
         currentPlug.setIP("192.168.43.28");
 
         currentAsyncTask(currentPlug);
@@ -59,12 +54,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         return inflatedView;
     }
-
-//    @Override
-//    public void onClick(View view) {
-//
-//    }
-
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
