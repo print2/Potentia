@@ -1,3 +1,5 @@
+package app.potentia;
+
 import java.util.*;
 
 public class appDriver extends FlaskExecutor{
@@ -52,6 +54,14 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> connectedList = stringToList(connectedString);
 
         return connectedList;
+    }
+
+    public ArrayList<applianceProfile> getApplianceList(){
+        return applianceList;
+    }
+
+    public ArrayList<plugProfile> getPlugList(){
+        return plugProfileList;
     }
 
     public void addPlugProfile(plugProfile plug){
