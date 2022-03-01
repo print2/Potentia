@@ -19,15 +19,18 @@ cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongo
 db = cluster.test
 db=cluster["Plugs"]
 collection=db["UsageData"]
+def accessDatabase(name,t1,t2):
+    return collection.find({
+    "name": name,
+    "$and": [{"date/time": {"$gt": t1}}, {"date/time": {"$lt": t2}}]})
 
 @app.route('/getplugdata/<name>&<timeStart>&<timeEnd>', methods=["GET"])
 def getPlugData(name,timeStart,timeEnd):
     #gets all readings for a given plug between a given time range
     t1=datetime(int(timeStart[:4]), int(timeStart[4:6]), int(timeStart[6:8]), int(timeStart[8:10]), int(timeStart[10:12]), int(timeStart[12:14]), int(timeStart[14:20]))
     t2=datetime(int(timeEnd[:4]), int(timeEnd[4:6]), int(timeEnd[6:8]), int(timeEnd[8:10]), int(timeEnd[10:12]), int(timeEnd[12:14]), int(timeEnd[14:20]))
-    return dumps(collection.find({
-    "name": name,
-    "$and": [{"date/time": {"$gt": t1}}, {"date/time": {"$lt": t2}}]}))
+    return dumps(accessDatabase(name,t1,t2))
+
 @app.route('/testing/<name>',methods=["GET"])
 def getPlugData2(name):
     #gets all readings for a given plug
@@ -226,6 +229,15 @@ def usageByHour(data):
         if readings[i]!=0:
             ret[i]/=readings[i]
     return ret
+
+@app.route('/checkstandby/<name>')
+def checkStandBy(name):
+    data=accessDatabase(name,datetime.now()-timedelta(minutes=1),datetime.now())
+    #assumption may change during testing
+    if 5*data[len(data)-1]["Power"]<data[0]["Power"]:#if last reading more than 500% lower than first
+        return dumps("True")#start standby timer
+    return dumps("False")
+
 
 
 
