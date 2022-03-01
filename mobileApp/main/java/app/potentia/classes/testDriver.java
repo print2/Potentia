@@ -10,9 +10,20 @@ public class testDriver {
         // plug.retrieveCurrUsage();
 
         appDriver potentia = new appDriver();
+        
+        ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
+        plug.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(0));
+        plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(1));
+
+        ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"20220218154000000000","20220218173000000000");
+
+        for(String point:dataPoints){
+            System.out.println(point);
+        }
+
         //System.out.println(potentia.getNetwork());
         //ArrayList<String> connected = potentia.getConnectedPlugs();
-        ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
+        // ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
 
         // System.out.println(unconnected.size());
         
@@ -22,8 +33,8 @@ public class testDriver {
 
         // System.out.println(plug.getIP());
 
-        plug.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(0));
-        plug2.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(1));
+        // plug.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(0));
+        // plug2.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(1));
 
         // try{
         //     Thread.sleep(1000);
@@ -34,7 +45,7 @@ public class testDriver {
 
         //     plug.togglePower();
         // }
-        // catch(Exception e){
+        // catch(Exception e){`
         //     System.out.println(e);
         // }
 

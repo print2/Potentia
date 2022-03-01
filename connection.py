@@ -214,7 +214,8 @@ async def getConnectedPlugs():
         usefulMac = connectedPlugs[ip].hw_info['mac'][12:]
         ssidList = ssidList + "TP-LINK_Smart Plug_" + usefulMac[:2] + usefulMac[3:] + "|"
 
-    ssidList = ssidList[:-1]
+    if(len(ssidList) != 0):
+        ssidList = ssidList[:-1]
 
     return dumps(ssidList)
 

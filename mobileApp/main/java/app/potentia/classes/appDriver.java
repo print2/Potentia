@@ -18,6 +18,8 @@ public class appDriver extends FlaskExecutor{
     private ArrayList<applianceProfile> applianceList = new ArrayList<>();
     private ArrayList<plugProfile> plugProfileList = new ArrayList<>();
 
+    private int numGraphDatapoints = 24;
+
     public appDriver(){
         applianceList.add(fridge);
         applianceList.add(kettle);
@@ -73,5 +75,21 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> params = new ArrayList<>();
         String network = execFlaskMethod("getNetwork",params);
         return network;
+    }
+
+    public ArrayList<String> getGraphDataPoints(plugProfile plug,String timeS,String timeE){
+        String plugIP = plug.getIP();
+
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plugIP);
+        params.add(timeS);
+        params.add(timeE);
+        params.add(Integer.toString(this.numGraphDatapoints));
+
+        String datapointsString = execFlaskMethod("getGraphPoints",params);
+
+        ArrayList<String> datapointsList = stringToList(datapointsString);
+
+        return datapointsList;
     }
 }
