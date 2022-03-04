@@ -13,5 +13,7 @@
     <string name="day">Day</string>
     <string name="your_smart_plugs">Your Smart Plugs</string>
     <string name="create_plug_profile">Create Smart Plug Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

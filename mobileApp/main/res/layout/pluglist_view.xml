@@ -17,7 +17,7 @@ android:padding="6dip" >
         android:src="@drawable/ic_plugs" />
 
     <TextView
-        android:id="@+id/plugName"
+        android:id="@+id/profileName"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
@@ -25,6 +25,7 @@ android:padding="6dip" >
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="6dp"
+        android:layout_marginEnd="130dp"
         android:layout_toEndOf="@id/icon"
         android:gravity="center_vertical"
         android:text=""
@@ -37,6 +38,7 @@ android:padding="6dip" >
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="6dp"
+        android:layout_marginEnd="130dp"
         android:layout_marginBottom="20dp"
         android:layout_toEndOf="@id/icon"
         android:ellipsize="marquee"
@@ -46,17 +48,27 @@ android:padding="6dip" >
 
     <TextView
         android:id="@+id/timer"
-        android:layout_width="wrap_content"
+        android:layout_width="176dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="6dp"
-        android:layout_marginEnd="6dp"
+        android:layout_marginEnd="130dp"
         android:layout_marginBottom="1dp"
         android:layout_toEndOf="@id/icon"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text=""
         android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect"
+        android:layout_marginStart="240dp"
+        android:layout_marginTop="10dp"
+        android:textSize="12sp"/>
+
 
 </RelativeLayout>

@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //add login fragment
         switchFragment(homeFragment);
 
         navigationBarView = findViewById(R.id.bottomNavigationView);
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         navigationBarView.setOnItemSelectedListener(this);
     }
 
+    //bottom nav bar
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 .replace(R.id.container,fragment).commit();
     }
 
+    //add to stack
     public void forwardFragment(Fragment fragment){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, fragment);
