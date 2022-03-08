@@ -14,6 +14,7 @@ public class plugProfile extends FlaskExecutor{
     private boolean connectedToPlug = false;
 
     private long timeTurnedOn;
+    private long timeStandBy;
 
     plugProfile(String name){
         this.name = name;
@@ -137,6 +138,13 @@ public class plugProfile extends FlaskExecutor{
 
     public boolean isProlongedOnDisable(){
         if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilDisable()){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isProlongedStandByDisable(){
+        if((System.currentTimeMillis()/60000) - this.timeStandBy > appliance.getTimeOnStandby()){
             return true;
         }
         return false;

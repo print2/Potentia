@@ -22,14 +22,14 @@ collection=db["UsageData"]
 def accessDatabase(name,t1,t2):
     return collection.find({
     "name": name,
-    "$and": [{"date/time": {"$gt": t1}}, {"date/time": {"$lt": t2}}]})
+    "$and": [{"date/time": {"$gt": int(t1)}}, {"date/time": {"$lt": int(t2)}}]})
 
 @app.route('/getplugdata/<name>&<timeStart>&<timeEnd>', methods=["GET"])
 def getPlugData(name,timeStart,timeEnd):
     #gets all readings for a given plug between a given time range
-    t1=datetime(int(timeStart[:4]), int(timeStart[4:6]), int(timeStart[6:8]), int(timeStart[8:10]), int(timeStart[10:12]), int(timeStart[12:14]), int(timeStart[14:20]))
-    t2=datetime(int(timeEnd[:4]), int(timeEnd[4:6]), int(timeEnd[6:8]), int(timeEnd[8:10]), int(timeEnd[10:12]), int(timeEnd[12:14]), int(timeEnd[14:20]))
-    return dumps(accessDatabase(name,t1,t2))
+    # t1=datetime(int(timeStart[:4]), int(timeStart[4:6]), int(timeStart[6:8]), int(timeStart[8:10]), int(timeStart[10:12]), int(timeStart[12:14]), int(timeStart[14:20]))
+    # t2=datetime(int(timeEnd[:4]), int(timeEnd[4:6]), int(timeEnd[6:8]), int(timeEnd[8:10]), int(timeEnd[10:12]), int(timeEnd[12:14]), int(timeEnd[14:20]))
+    return dumps(accessDatabase(name,timeStart,timeEnd))
 
 @app.route('/testing/<name>',methods=["GET"])
 def getPlugData2(name):
@@ -88,43 +88,54 @@ def getDelta(timestr,option):
             timestr+="0"
         return timedelta(days=int(timestr[8:10])+getDaysInMonths(int(timestr[5:7]))+365*int(timestr[:4]), hours=int(timestr[11:13]), minutes=int(timestr[14:16]), seconds=int(timestr[17:19]), milliseconds=int(timestr[20:23]))
 @app.route('/getdatapoints/<name>&<timeStart>&<timeEnd>&<numberOfPoints>', methods=["GET"])
-def getDataPoints(name,timeStart,timeEnd, numberOfPoints):
+def getDataPoints(name,numberOfPoints,timeDiff):
+    timeEnd = int(time())
+    timeStart = timeEnd - timeDiff
+    print(str(timeStart)+" "+str(timeEnd))
     #get all readings and produce an average for each portion of the time period
     #to be displayed on the graph
-    data=requests.get('http://0.0.0.0:5000/getplugdata/'+name+'&'+timeStart+'&'+timeEnd)#return all data
+    data=requests.get('http://0.0.0.0:5000/getplugdata/'+name+'&'+str(timeStart)+'&'+str(timeEnd))#return all data
+    # data = accessDatabase(name,str(timeStart),str(timeEnd))
     #data=getPlugData(name,timeStart,timeEnd)
     #data=getPlugData(name,timeStart,timeEnd)
     data=json.loads(data.text)
-    #data=json.loads(data)
     #print(timeStart)
-    timeStart=getDelta(timeStart,1)
-    timeEnd=getDelta(timeEnd,1)
+    # timeStart=getDelta(timeStart,1)
+    # timeEnd=getDelta(timeEnd,1)
     numberOfPoints=int(numberOfPoints)
 
     i=0
     ret=[]
 
+    print(name)
+    print(len(data))
     if len(data)==0:
         return emptyList(int(numberOfPoints))
 
-    period=(timeEnd-timeStart)/int(numberOfPoints)#gets time in ms
+    # period=(timeEnd-timeStart)/int(numberOfPoints)#gets time in ms
+    period=(timeDiff)/int(numberOfPoints)
     currTime=timeStart+period
-    if currTime<getDelta(data[i]["date/time"]["$date"],2):
+    print(currTime)
+    print(period)
+    print(data[i]["date/time"])
+    if currTime>data[i]["date/time"]:
         # print(currTime)
         # print(data[i]["date/time"]["$date"])
         # print(getDelta(data[i]["date/time"]["$date"],2))
+        print("test2")
         return []
     while True:#calculate each data point
         ptscount=0
         ptstotal=0
         # print(currTime)
-        while getDelta(data[i]["date/time"]["$date"],2)<currTime:#collect all data in given portion of time period
+        while data[i]["date/time"]<currTime:#collect all data in given portion of time period
             ptscount+=1
             ptstotal+=data[i]["Power"]
             i+=1
             if i>=len(data):
                 ret.append(ptstotal/ptscount)
                 numberOfPoints-=1
+                print("test")
                 return ret+emptyList(numberOfPoints)
         currTime+=period
         if ptscount==0:
@@ -307,17 +318,14 @@ def isOn(ip):
     result = asyncio.run(getIsOn(ip))
     return result
 
-@app.route('/getGraphPoints/<ip>&<timeS>&<timeE>&<numPoints>',methods=["GET"])
-def getGraphPoints(ip,timeS,timeE,numPoints):
-    datapoints = asyncio.run(aGetGraphPoints(ip,timeS,timeE,numPoints))
+@app.route('/getGraphPoints/<ip>&<numPoints>&<timeDiff>',methods=["GET"])
+def getGraphPoints(ip,numPoints,timeDiff):
+    datapoints = asyncio.run(aGetGraphPoints(ip,numPoints,timeDiff))
 
     return dumps(datapoints)
 
-async def aGetGraphPoints(ip,timeS,timeE,numPoints):
-    plug = SmartPlug(ip)
-    await plug.update()
-
-    dataPoints = getDataPoints(plug.alias,timeS,timeE,numPoints)
+async def aGetGraphPoints(alias,numPoints,timeDiff):
+    dataPoints = getDataPoints(alias,numPoints,int(timeDiff))
 
     dataPointsStr = ""
     for point in dataPoints:

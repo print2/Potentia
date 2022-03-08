@@ -3,6 +3,7 @@ public class applianceProfile {
     private boolean permOn;
     private int timeUntilNotify;
     private int timeUntilDisable;
+    private int timeOnStandby;
 
     public applianceProfile(String name, boolean permOn){
         this.name = name;
@@ -46,5 +47,13 @@ public class applianceProfile {
 
     public void setTimeUntilDisable(int timeUntilDisable){
         this.timeUntilDisable = timeUntilDisable;
+    }
+
+    public int getTimeOnStandby(){
+        return timeOnStandby;
+    }
+
+    public void setTimeOnStandby(int timeOnStandby){
+        this.timeOnStandby=timeOnStandby;
     }
 }

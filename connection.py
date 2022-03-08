@@ -117,7 +117,7 @@ async def readSingle(plug):
             print(plug.alias + " is currently using: " + str(power) + " W at "+ datetime.now().strftime("%H: %M: %S:"))
             usefulMac = plug.hw_info['mac'][12:]
 
-            post={"name": plug.alias,"Power": power, "date/time": datetime.now()}
+            post={"name": plug.alias,"Power": power, "date/time": int(time())}
             collection.insert_one(post)
         except:
             pass

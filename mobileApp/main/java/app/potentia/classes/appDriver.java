@@ -1,5 +1,3 @@
-package app.potentia;
-
 import java.util.*;
 
 public class appDriver extends FlaskExecutor{
@@ -22,6 +20,8 @@ public class appDriver extends FlaskExecutor{
 
     private int numGraphDatapoints = 24;
 
+    private HashMap<String,Integer> timeValues = new HashMap<>();
+
     public appDriver(){
         applianceList.add(fridge);
         applianceList.add(kettle);
@@ -36,6 +36,12 @@ public class appDriver extends FlaskExecutor{
         applianceList.add(oven);
         applianceList.add(toaster);
         applianceList.add(washingMachine);
+
+        timeValues.put("Minute",60);
+        timeValues.put("Hour",3600);
+        timeValues.put("Day",86400);
+        timeValues.put("Week",604800);
+        timeValues.put("4Week",2419200);
     }
     
     public ArrayList<String> getUnconnectedPlugs(){
@@ -87,19 +93,29 @@ public class appDriver extends FlaskExecutor{
         return network;
     }
 
-    public ArrayList<String> getGraphDataPoints(plugProfile plug,String timeS,String timeE){
-        String plugIP = plug.getIP();
-
+    public ArrayList<String> getGraphDataPoints(plugProfile plug,String timePeriod){
         ArrayList<String> params = new ArrayList<>();
-        params.add(plugIP);
-        params.add(timeS);
-        params.add(timeE);
+        params.add(plug.getName());
+        // params.add(timeS);
+        // params.add(timeE);
         params.add(Integer.toString(this.numGraphDatapoints));
+        params.add(Integer.toString(timeValues.get(timePeriod)));
 
         String datapointsString = execFlaskMethod("getGraphPoints",params);
 
         ArrayList<String> datapointsList = stringToList(datapointsString);
 
         return datapointsList;
+    }
+
+    public ArrayList<Integer> getGraphTimePoints(String timePeriod){
+        int difference = timeValues.get(timePeriod);
+        
+        ArrayList<Integer> timePoints = new ArrayList<>();
+        for (int i=0;i<this.numGraphDatapoints;i++){
+            timePoints.add(i*difference);
+        }
+
+        return timePoints;
     }
 }
