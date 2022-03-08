@@ -1,6 +1,5 @@
 package app.potentia;
 
-import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,9 +28,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private String reading;
 
     private appDriver appDriver = new appDriver();
-    private ArrayList<String> connectedList = new ArrayList<String>();
-    private plugProfile currentPlug = new plugProfile("Smart Plug 1");
-    private String currentName;
+    private ArrayList<plugProfile> allPlugs = new ArrayList<plugProfile>();
+    private ArrayList<String> connectedNameList = new ArrayList<String>();
+    private plugProfile currentPlug;
 
 
     @Override
@@ -40,14 +39,13 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         this.inflatedView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        currentPlug.setIP("192.168.43.28");
-
-        currentAsyncTask(currentPlug);
+        allPlugs = appDriver.getPlugList();
+        currentAsyncTask(0);
 
         currentUsage = inflatedView.findViewById(R.id.currentUsage);
         dropdown = inflatedView.findViewById(R.id.dropdown);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(inflatedView.getContext(), android.R.layout.simple_spinner_item, connectedList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(inflatedView.getContext(), android.R.layout.simple_spinner_item, connectedNameList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown.setAdapter(adapter);
         dropdown.setOnItemSelectedListener(this);
@@ -57,34 +55,38 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-
-        currentName = connectedList.get(position);
-        currentPlug = appDriver.getPlugByName(currentName);
-
-        currentAsyncTask(currentPlug);
+        currentAsyncTask(position);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        currentAsyncTask(currentPlug);
+        currentAsyncTask(0);
     }
 
-    public class Async extends AsyncTask<plugProfile, Void, String>{
-
+    //gets list of names of connected plugs
+    //gets current reading of selected
+    public class Async extends AsyncTask<Integer, Void, String>{
         @Override
-        protected String doInBackground(plugProfile... params) {
-            connectedList = appDriver.getConnectedPlugs();
-            reading = currentPlug.retrieveCurrUsage() + " W";
+        protected String doInBackground(Integer... params) {
+            connectedNameList.clear();
+            try{
+                connectedNameList = appDriver.getConnectedProfiles();
+                currentPlug = appDriver.getPlugByName(connectedNameList.get(params[0]));
+                reading = currentPlug.retrieveCurrUsage() + " W";
+            } catch (Exception e) {
+                e.printStackTrace();
+                reading = "Error";
+            }
             return reading;
         }
-
         @Override
         protected void onPostExecute(String result){
             currentUsage.setText(result);
         }
     }
 
-    private void currentAsyncTask(plugProfile plug) {
+    //run Async every sec
+    private void currentAsyncTask(int i) {
 
         final Handler handler = new Handler();
         Timer timer = new Timer();
@@ -95,7 +97,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 handler.post(new Runnable() {
                     public void run() {
 
-                        Async update = (Async) new Async().execute(plug);
+                        Async update = (Async) new Async().execute(i);
                     }
                 });
             }

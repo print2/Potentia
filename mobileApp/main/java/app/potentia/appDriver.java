@@ -1,6 +1,9 @@
 import java.util.*;
 
 public class appDriver extends FlaskExecutor{
+    private ArrayList<applianceProfile> applianceList = new ArrayList<>();
+    private ArrayList<plugProfile> plugProfileList = new ArrayList<>();
+
     private applianceProfile fridge = new applianceProfile("Fridge", true);
     private applianceProfile kettle = new applianceProfile("Kettle",false,10,20);
     private applianceProfile charger = new applianceProfile("Charger",false,180,0);
@@ -15,8 +18,9 @@ public class appDriver extends FlaskExecutor{
     private applianceProfile toaster = new applianceProfile("Toaster",false,10,10);
     private applianceProfile washingMachine = new applianceProfile("Washing Machine",false,240,120);
 
-    private ArrayList<applianceProfile> applianceList = new ArrayList<>();
-    private ArrayList<plugProfile> plugProfileList = new ArrayList<>();
+    private plugProfile plug1;
+    private plugProfile plug2;
+    private plugProfile plug3;
 
     private int numGraphDatapoints = 24;
 
@@ -42,6 +46,21 @@ public class appDriver extends FlaskExecutor{
         timeValues.put("Day",86400);
         timeValues.put("Week",604800);
         timeValues.put("4Week",2419200);
+        
+        plug1 = new plugProfile("Plug1", applianceList.get(0));
+        plug2 = new plugProfile("Plug2", applianceList.get(1));
+        plug3 = new plugProfile("Plug3", applianceList.get(2));
+
+        plug1.setConnected(true);
+        plug1.setIP("192.168.43.28");
+
+        plug2.setConnected(true);
+        plug2.setIP("192.168.43.28");
+
+        plugProfileList.add(plug1);
+        plugProfileList.add(plug2);
+        plugProfileList.add(plug3);
+
     }
     
     public ArrayList<String> getUnconnectedPlugs(){
@@ -59,6 +78,16 @@ public class appDriver extends FlaskExecutor{
 
         ArrayList<String> connectedList = stringToList(connectedString);
 
+        return connectedList;
+    }
+
+    public ArrayList<String> getConnectedProfiles(){
+        ArrayList<String> connectedList = new ArrayList<>();
+        for(int i = 0; i < plugProfileList.size(); i++){
+            if(plugProfileList.get(i).getConnected()){
+                connectedList.add(plugProfileList.get(i).getName());
+            }
+        }
         return connectedList;
     }
 

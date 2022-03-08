@@ -2,6 +2,7 @@ package app.potentia;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,7 +18,8 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-
+//TODO
+//add onSelectListener to profile
 public class PlugFragmentMain extends Fragment{
 
     public PlugFragmentMain() {
@@ -41,13 +43,6 @@ public class PlugFragmentMain extends Fragment{
         this.inflatedView = inflater.inflate(R.layout.fragment_plugmain, container, false);
 
         allAppliances = appDriver.getApplianceList();
-
-        //testing
-        plugProfile plug1 = new plugProfile("Plug1", allAppliances.get(0));
-        plugProfile plug2 = new plugProfile("Plug2", allAppliances.get(1));
-        appDriver.addPlugProfile(plug1);
-        appDriver.addPlugProfile(plug2);
-
         allPlugs = appDriver.getPlugList();
 
         listView = inflatedView.findViewById(R.id.plugList);
@@ -65,7 +60,8 @@ public class PlugFragmentMain extends Fragment{
         return inflatedView;
     }
 
-    public static class CustomAdapter extends BaseAdapter {
+    //adapter to display profile list
+    public class CustomAdapter extends BaseAdapter {
         Context context;
         private ArrayList <plugProfile> allPlugs = new ArrayList<plugProfile>();
         LayoutInflater inflater;
@@ -95,12 +91,13 @@ public class PlugFragmentMain extends Fragment{
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             //TODO
-            //add connected button
+            //add timer times
 
             view = inflater.inflate(R.layout.pluglist_view, viewGroup, false);
-            TextView name = view.findViewById(R.id.plugName);
+            TextView name = view.findViewById(R.id.profileName);
             TextView appliance = view.findViewById(R.id.applianceName);
             TextView timer = view.findViewById(R.id.timer);
+            Button connected = view.findViewById(R.id.connect);
 
             plugProfile x = allPlugs.get(i);
 
@@ -111,6 +108,19 @@ public class PlugFragmentMain extends Fragment{
                 ts = "Timer: Always On";
             } else if(!x.getAppliance().getPermOn()){
                 ts = "Timer: None";
+            }
+
+            if(x.getConnected()){
+                connected.setText("Connected");
+                connected.setBackgroundColor(Color.GRAY);
+            } else if (!x.getConnected()){
+                connected.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ConnectFragment connectFragment = new ConnectFragment(x.getName());
+                        ((MainActivity) getActivity()).forwardFragment(connectFragment);
+                    }
+                });
             }
 
             name.setText(x.getName());
