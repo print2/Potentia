@@ -46,7 +46,7 @@ public class appDriver extends FlaskExecutor{
         timeValues.put("Day",86400);
         timeValues.put("Week",604800);
         timeValues.put("4Week",2419200);
-        
+
         plug1 = new plugProfile("Plug1", applianceList.get(0));
         plug2 = new plugProfile("Plug2", applianceList.get(1));
         plug3 = new plugProfile("Plug3", applianceList.get(2));
@@ -125,8 +125,6 @@ public class appDriver extends FlaskExecutor{
     public ArrayList<String> getGraphDataPoints(plugProfile plug,String timePeriod){
         ArrayList<String> params = new ArrayList<>();
         params.add(plug.getName());
-        // params.add(timeS);
-        // params.add(timeE);
         params.add(Integer.toString(this.numGraphDatapoints));
         params.add(Integer.toString(timeValues.get(timePeriod)));
 

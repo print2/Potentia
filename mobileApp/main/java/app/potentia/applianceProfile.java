@@ -1,5 +1,3 @@
-package app.potentia;
-
 public class applianceProfile {
     private String name;
     private boolean permOn;

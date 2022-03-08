@@ -1,5 +1,3 @@
-package app.potentia;
-
 import java.util.*;
 
 public class plugProfile extends FlaskExecutor{

@@ -1,5 +1,3 @@
-package app.potentia;
-
 public class plugReader implements Runnable{
     private plugProfile plug;
 

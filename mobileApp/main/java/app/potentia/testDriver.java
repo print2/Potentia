@@ -11,11 +11,11 @@ public class testDriver {
 
         appDriver potentia = new appDriver();
         
-        // ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
-        // plug.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(0));
+        ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
+        plug.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(0));
         // plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(1));
 
-        ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Hour");
+        ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Day");
 
         for(String point:dataPoints){
             System.out.println(point);
