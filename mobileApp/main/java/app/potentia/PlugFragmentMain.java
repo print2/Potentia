@@ -30,7 +30,7 @@ public class PlugFragmentMain extends Fragment{
 
     private View inflatedView;
     private ListView listView;
-    private appDriver appDriver = new appDriver();
+    private appDriver appDriver;
 
     private ArrayList <plugProfile> allPlugs = new ArrayList<plugProfile>();
     private ArrayList <applianceProfile> allAppliances = new ArrayList<applianceProfile>();
@@ -41,6 +41,8 @@ public class PlugFragmentMain extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.inflatedView = inflater.inflate(R.layout.fragment_plugmain, container, false);
+
+        appDriver = ((MainActivity) getActivity()).getAppDriver();
 
         allAppliances = appDriver.getApplianceList();
         allPlugs = appDriver.getPlugList();

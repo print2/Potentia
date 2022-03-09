@@ -12,7 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
 
     NavigationBarView navigationBarView;
-
+    appDriver appDriver = new appDriver();
     InfoFragment infoFragment = new InfoFragment();
     PlugFragmentMain plugFragment = new PlugFragmentMain();
     HomeFragment homeFragment = new HomeFragment();
@@ -76,5 +76,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         } else {
             super.onBackPressed();
         }
+    }
+
+    public plugProfile getCurrentPlug(){
+        return homeFragment.getCurrentPlug();
+    }
+
+    public appDriver getAppDriver(){
+        return appDriver;
     }
 }

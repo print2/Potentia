@@ -28,10 +28,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private String reading;
 
     private appDriver appDriver = new appDriver();
-    private ArrayList<plugProfile> allPlugs = new ArrayList<plugProfile>();
     private ArrayList<String> connectedNameList = new ArrayList<String>();
     private plugProfile currentPlug;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,7 +37,11 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         this.inflatedView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        allPlugs = appDriver.getPlugList();
+        appDriver = ((MainActivity) getActivity()).getAppDriver();
+
+        connectedNameList = appDriver.getConnectedProfiles();
+        currentPlug = appDriver.getPlugByName(connectedNameList.get(0));
+
         currentAsyncTask(0);
 
         currentUsage = inflatedView.findViewById(R.id.currentUsage);
@@ -63,20 +65,14 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         currentAsyncTask(0);
     }
 
+
     //gets list of names of connected plugs
     //gets current reading of selected
     public class Async extends AsyncTask<Integer, Void, String>{
         @Override
         protected String doInBackground(Integer... params) {
-            connectedNameList.clear();
-            try{
-                connectedNameList = appDriver.getConnectedProfiles();
-                currentPlug = appDriver.getPlugByName(connectedNameList.get(params[0]));
-                reading = currentPlug.retrieveCurrUsage() + " W";
-            } catch (Exception e) {
-                e.printStackTrace();
-                reading = "Error";
-            }
+            currentPlug = appDriver.getPlugByName(connectedNameList.get(params[0]));
+            reading = currentPlug.retrieveCurrUsage() + " W";
             return reading;
         }
         @Override
@@ -96,13 +92,16 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
-
                         Async update = (Async) new Async().execute(i);
                     }
                 });
             }
         };
         timer.schedule(task, 0, 1000);
+    }
+
+    public plugProfile getCurrentPlug(){
+        return currentPlug;
     }
 
 }

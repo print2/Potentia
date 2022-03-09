@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 //TODO
 //add onSelectListener
@@ -28,9 +31,9 @@ public class ConnectFragment extends Fragment implements AdapterView.OnItemSelec
     private View inflatedView;
     private ListView listView;
     private ImageView back;
-    private TextView text;
-
-    private appDriver appDriver = new appDriver();
+    private TextView text1;
+    private TextView text2;
+    private appDriver appDriver;
     private plugProfile thisPlug; //plug to connect
     private ArrayList<String> unConnected = new ArrayList<>();
 
@@ -60,15 +63,14 @@ public class ConnectFragment extends Fragment implements AdapterView.OnItemSelec
                              Bundle savedInstanceState) {
         inflatedView = inflater.inflate(R.layout.fragment_connect, container, false);
 
-        text = inflatedView.findViewById(R.id.connectText1);
-        text.setText("Connect to " + mPlugName);
+        appDriver = ((MainActivity) getActivity()).getAppDriver();
+
+        text1 = inflatedView.findViewById(R.id.connectText1);
+        text2 = inflatedView.findViewById(R.id.connectText2);
+        text1.setText("Connect to " + mPlugName);
 
         thisPlug = appDriver.getPlugByName(mPlugName);
-        //new getUnconnectedListAsync().execute("");
-
-        //test names
-        unConnected.add("mPlugName");
-        unConnected.add("mPlugName");
+        runAsync();
 
         listView = inflatedView.findViewById(R.id.unconnectedList);
         CustomAdapter adapter = new CustomAdapter(inflatedView.getContext(), unConnected);
@@ -85,18 +87,42 @@ public class ConnectFragment extends Fragment implements AdapterView.OnItemSelec
         return inflatedView;
     }
 
-    @SuppressLint("StaticFieldLeak")
-    public class getUnconnectedListAsync extends AsyncTask<String, Void, String> {
+    public class unconnectedAsync extends AsyncTask<Void, Void, String> {
 
         @Override
-        protected String doInBackground(String... params) {
-            unConnected = appDriver.getUnconnectedPlugs();
+        protected String doInBackground(Void... params) {
+            //unConnected = appDriver.getUnconnectedPlugs();
+            unConnected.add("mPlugName");
+            unConnected.add("mPlugName");
             return "Done";
         }
         @Override
         protected void onPostExecute(String result){
+            if(unConnected.size()>0){
+                text2.setText("Unconnected Smart Plugs found: ");
+            } else {
+                text2.setText("No Smart Plugs Found");
+            }
 
         }
+    }
+
+    private void runAsync() {
+
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        new unconnectedAsync().execute();
+                    }
+                });
+            }
+        };
+        timer.schedule(task, 0, 1000);
     }
 
     //adapter to display plug list
