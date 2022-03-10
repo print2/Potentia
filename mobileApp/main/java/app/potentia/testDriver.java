@@ -5,7 +5,7 @@ public class testDriver {
 
     public static void main(String[] args){
         plugProfile plug = new plugProfile("PC");
-        plugProfile plug2 = new plugProfile("Kitchen");
+        plugProfile plug2 = new plugProfile("PhoneCharger");
         // plug.setIP("192.168.43.28");
         // plug.retrieveCurrUsage();
 
@@ -13,7 +13,7 @@ public class testDriver {
         
         ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
         // plug.connectPlug("a34d7b8e32","PLUSNET-SCN5",unconnected.get(0));
-        // plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
+        plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
 
         // ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Day");
         // ArrayList<Integer> timePoints = potentia.getGraphTimePoints("Day");
@@ -33,9 +33,9 @@ public class testDriver {
 
         // System.out.println(unconnected.size());
         
-        for (String newPlug : unconnected){
-            System.out.println(newPlug);
-        }
+        // for (String newPlug : unconnected){
+        //     System.out.println(newPlug);
+        // }
 
         // System.out.println(plug.getIP());
 
