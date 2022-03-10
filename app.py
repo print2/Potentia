@@ -91,7 +91,6 @@ def getDelta(timestr,option):
 def getDataPoints(name,numberOfPoints,timeDiff):
     timeEnd = int(time())
     timeStart = timeEnd - timeDiff
-    print(str(timeStart)+" "+str(timeEnd))
     #get all readings and produce an average for each portion of the time period
     #to be displayed on the graph
     data=requests.get('http://0.0.0.0:5000/getplugdata/'+name+'&'+str(timeStart)+'&'+str(timeEnd))#return all data
@@ -107,23 +106,21 @@ def getDataPoints(name,numberOfPoints,timeDiff):
     i=0
     ret=[]
 
-    print(name)
-    print(len(data))
     if len(data)==0:
         return emptyList(int(numberOfPoints))
 
     # period=(timeEnd-timeStart)/int(numberOfPoints)#gets time in ms
     period=(timeDiff)/int(numberOfPoints)
     currTime=timeStart+period
-    print(currTime)
-    print(period)
-    print(data[i]["date/time"])
-    if currTime>data[i]["date/time"]:
-        # print(currTime)
-        # print(data[i]["date/time"]["$date"])
-        # print(getDelta(data[i]["date/time"]["$date"],2))
-        print("test2")
-        return []
+
+    # if currTime>data[i]["date/time"]:
+    #     # print(currTime)
+    #     # print(data[i]["date/time"]["$date"])
+    #     # print(getDelta(data[i]["date/time"]["$date"],2))
+    #     print("test2")
+    #     print(currTime)
+    #     print(data[i]["date/time"])
+    #     return []
     while True:#calculate each data point
         ptscount=0
         ptstotal=0
@@ -135,7 +132,6 @@ def getDataPoints(name,numberOfPoints,timeDiff):
             if i>=len(data):
                 ret.append(ptstotal/ptscount)
                 numberOfPoints-=1
-                print("test")
                 return ret+emptyList(numberOfPoints)
         currTime+=period
         if ptscount==0:
