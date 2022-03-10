@@ -16,7 +16,7 @@ import requests
 app=Flask(__name__)
 
 cluster=MongoClient("mongodb+srv://230GRP4:HklMriJ6iK8iU8n5@cluster0.wl3na.mongodb.net/Plugs?retryWrites=true&w=majority")
-db = cluster.test
+#db = cluster.test
 db=cluster["Plugs"]
 collection=db["UsageData"]
 def accessDatabase(name,t1,t2):
@@ -48,6 +48,32 @@ def calculateAverageUsage(name,timeStart,timeEnd):
         totalpower+=x["Power"]
         readings+=1
     return totalpower/readings
+
+@app.route('/profiles/', methods=["GET"])
+def getPlugProfiles():
+    return dumps(db["Profiles"].find())
+
+@app.route('/applianceprofile/', methods=["GET"])
+def getApplianceProfiles():
+    return dumps(db["Appliances"].find())
+
+@app.route('/addProfile/<name>&<description>&<appliancename>')
+def addPlugProfile(name,description,applianceName):
+    post={"_id": name,"description": description, "applianceName": applianceName}
+    db["Profiles"].insert_one(post)
+
+@app.route('/addapplianceprofile/<name>&<permOn>&<timeuntildisable>')
+def addApplianceProfile(name,permOn,timeUntilDisable):
+    post={"_id": name,"permOn": permOn, "timeUntilDisable": timeUntilDisable}
+    db["Appliances"].insert_one(post)
+
+@app.route('/deleteProfile/<name>')
+def deletePlugProfile(name):
+    db["Profiles"].delete_many({"_id":name})
+
+@app.route('/deleteApplianceProfile/<name>')
+def deleteApplianceProfile(name):
+    db["Appliances"].delete_many({"_id":name})
 
 def getMonth(currDay,currMonth):
     #determines if the month has changed
