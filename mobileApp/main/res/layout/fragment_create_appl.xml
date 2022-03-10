@@ -12,6 +12,17 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_arrowback"
+            app:layout_constraintBottom_toTopOf="@+id/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.041"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <View
             android:id="@+id/divider"
             android:layout_width="409dp"
@@ -26,28 +37,17 @@
             android:id="@+id/createText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/create_plug_profile"
+            android:text="@string/create_appliance"
             android:textColor="@color/grey"
-            android:textSize="28sp"
+            android:textSize="26sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider"
             app:layout_constraintVertical_bias="0.027" />
 
-        <ImageView
-            android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_arrowback"
-            app:layout_constraintBottom_toTopOf="@+id/divider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.041"
-            app:layout_constraintStart_toStartOf="parent" />
-
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout2"
+            android:id="@+id/textInputLayout1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="480dp"
@@ -60,69 +60,72 @@
                 android:id="@+id/name"
                 android:layout_width="330dp"
                 android:layout_height="wrap_content"
-                android:hint="Profile Name*" />
+                android:hint="Appliance Name*" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="331dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider"
+            app:layout_constraintVertical_bias="0.306">
+
+            <RadioButton
+                android:id="@+id/manual"
+                android:checked="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/turn_on_off_manually" />
+
+            <RadioButton
+                android:id="@+id/permOn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/always_on" />
+
+            <RadioButton
+                android:id="@+id/timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/set_a_timer"/>
+        </RadioGroup>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
+            android:id="@+id/textInputLayout2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="350dp"
+            android:layout_marginBottom="60dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/createText">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/description"
-                android:layout_width="330dp"
-                android:layout_height="wrap_content"
-                android:hint="Description" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Appliance"
-            android:textColor="@color/grey"
-            android:textSize="17dp"
-            app:layout_constraintBottom_toTopOf="@+id/dropdown"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.074"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
-            app:layout_constraintVertical_bias="0.428" />
-
-        <Spinner
-            android:id="@+id/dropdown"
-            android:layout_width="180dp"
-            android:layout_height="40dp"
-            android:background="@drawable/dropdown"
-            android:spinnerMode="dropdown"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.118"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/divider"
-            app:layout_constraintVertical_bias="0.396" />
-
-        <Button
-            android:id="@+id/manage"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="135dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal_700"
-            android:text="Manage Appliances"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.938"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/createText"
-            app:layout_constraintVertical_bias="0.338" />
+            app:layout_constraintVertical_bias="0.526">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/timerText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Time in minutes"
+                android:inputType="number" />
+
+            <TextView
+                android:id="@+id/timerHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This plug will automatically turn off after the set time"
+                android:textColor="@color/grey"
+                android:textSize="12dp"
+                app:layout_anchor="@+id/constraintLayout"
+                app:layout_anchorGravity="center" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/create"
@@ -130,15 +133,16 @@
             android:layout_width="330dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/teal_700"
-            android:text="@string/create_profile"
+            android:text="@string/create_appliance"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.506"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/createText"
             app:layout_constraintVertical_bias="0.82" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

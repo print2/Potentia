@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,17 +23,20 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
         // Required empty public constructor
     }
 
-
     private View inflatedView;
     private appDriver appDriver;
 
+    private AppliancesFragment appliancesFragment = new AppliancesFragment();
+
     private ImageView back;
+    private Button manage;
     private Button create;
     private EditText name;
     private EditText description;
     private String sName;
     private String sDescription;
     private Spinner dropdown;
+
     private ArrayList<applianceProfile> applianceProfiles;
     private ArrayList<String> applianceNames = new ArrayList<>();
     private int pos;
@@ -44,6 +48,7 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
 
         appDriver = ((MainActivity) getActivity()).getAppDriver();
 
+        //back button
         back = inflatedView.findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +57,7 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
             }
         });
 
+        //appliance list
         applianceProfiles = appDriver.getApplianceList();
         applianceNames.add("None");
         for(int i = 0; i < applianceProfiles.size(); i++){
@@ -64,25 +70,43 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
         dropdown.setAdapter(adapter);
         dropdown.setOnItemSelectedListener(this);
 
-        create = inflatedView.findViewById(R.id.create);
-        create.setOnClickListener(new View.OnClickListener() {
+        //manage appliance
+        manage = inflatedView.findViewById(R.id.manage);
+        manage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                name = inflatedView.findViewById(R.id.name);
+                ((MainActivity) getActivity()).forwardFragment(appliancesFragment);
+            }
+        });
+
+        //create profile
+        create = inflatedView.findViewById(R.id.create);
+        name = inflatedView.findViewById(R.id.name);
+        description = inflatedView.findViewById(R.id.description);
+
+        create.setOnClickListener(new View.OnClickListener() {
+            plugProfile plug;
+
+            @Override
+            public void onClick(View view) {
                 sName = name.getText().toString();
-                description = inflatedView.findViewById(R.id.description);
-                sDescription = description.getText().toString();
 
-                //if no appliance selected
-                plugProfile plug;
-                if(pos == 0){
-                    plug = new plugProfile(sName);
-
-                } else {
-                    plug = new plugProfile(sName, "", applianceProfiles.get(pos - 1), sDescription);
+                if (validateForm()){
+                    //crashes
+                    if(description.length() > 0 && pos > 0){
+                        sDescription = description.getText().toString();
+                        plug = new plugProfile(sName, applianceProfiles.get(pos - 1), sDescription);
+                    } else if (description.length() > 0){
+                        sDescription = description.getText().toString();
+                        plug = new plugProfile(sName, sDescription);
+                    } else if (pos > 0){
+                        plug = new plugProfile(sName, applianceProfiles.get(pos - 1));
+                    } else {
+                        plug = new plugProfile(sName);
+                    }
+                    appDriver.addPlugProfile(plug);
+                    ((MainActivity) getActivity()).onBackPressed();
                 }
-                appDriver.addPlugProfile(plug);
-                ((MainActivity) getActivity()).onBackPressed();
             }
         });
         return inflatedView;
@@ -96,5 +120,14 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         pos = 0;
+    }
+
+    public Boolean validateForm(){
+        if (TextUtils.isEmpty(sName)){
+            name.setError("Please enter a name");
+            return false;
+        } else {
+            return true;
+        }
     }
 }

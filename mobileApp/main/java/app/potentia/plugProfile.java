@@ -1,8 +1,9 @@
+package app.potentia;
+
 import java.util.*;
 
 public class plugProfile extends FlaskExecutor{
     private String name;
-    private String location;
     private applianceProfile appliance;
     private String description;
     private boolean poweredOn;
@@ -20,9 +21,9 @@ public class plugProfile extends FlaskExecutor{
         this.name = name;
     }
 
-    plugProfile(String name, String location){
+    plugProfile(String name, String description){
         this.name = name;
-        this.location = location;
+        this.description = description;
     }
 
     plugProfile(String name, applianceProfile appliance){
@@ -30,9 +31,8 @@ public class plugProfile extends FlaskExecutor{
         this.appliance = appliance;
     }
 
-    plugProfile(String name, String location, applianceProfile appliance, String description){
+    plugProfile(String name, applianceProfile appliance, String description){
         this.name = name;
-        this.location = location;
         this.appliance = appliance;
         this.description = description;
     }
@@ -45,12 +45,12 @@ public class plugProfile extends FlaskExecutor{
         this.name = name;
     }
 
-    public String getLocation(){
-        return location;
+    public String getDescription(){
+        return description;
     }
 
-    public void setLocation(String location){
-        this.location = location;
+    public void setDescription(String description){
+        this.description = description;
     }
 
     public applianceProfile getAppliance(){
