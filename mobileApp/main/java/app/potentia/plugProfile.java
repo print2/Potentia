@@ -21,6 +21,11 @@ public class plugProfile extends FlaskExecutor{
         this.name = name;
     }
 
+    plugProfile(String name, String description){
+        this.name = name;
+        this.description = description;
+    }
+
     plugProfile(String name, applianceProfile appliance){
         this.name = name;
         this.appliance = appliance;

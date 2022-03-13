@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-//TODO
-//add onSelectListener
-public class ConnectFragment extends Fragment implements AdapterView.OnItemSelectedListener{
+public class ConnectFragment extends Fragment{
 
     private static final String ARG_PLUG_NAME = "plugName";
     private String mPlugName;
@@ -64,18 +62,16 @@ public class ConnectFragment extends Fragment implements AdapterView.OnItemSelec
         inflatedView = inflater.inflate(R.layout.fragment_connect, container, false);
 
         appDriver = ((MainActivity) getActivity()).getAppDriver();
+        thisPlug = appDriver.getPlugByName(mPlugName);
 
         text1 = inflatedView.findViewById(R.id.connectText1);
         text2 = inflatedView.findViewById(R.id.connectText2);
         text1.setText("Connect to " + mPlugName);
 
-        thisPlug = appDriver.getPlugByName(mPlugName);
+        listView = inflatedView.findViewById(R.id.unconnectedList);
         runAsync();
 
-        listView = inflatedView.findViewById(R.id.unconnectedList);
-        CustomAdapter adapter = new CustomAdapter(inflatedView.getContext(), unConnected);
-        listView.setAdapter(adapter);
-
+        //back button
         back = inflatedView.findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,13 +83,12 @@ public class ConnectFragment extends Fragment implements AdapterView.OnItemSelec
         return inflatedView;
     }
 
+    //get list of unconnected plugs
     public class unconnectedAsync extends AsyncTask<Void, Void, String> {
 
         @Override
         protected String doInBackground(Void... params) {
             //unConnected = appDriver.getUnconnectedPlugs();
-            unConnected.add("mPlugName");
-            unConnected.add("mPlugName");
             return "Done";
         }
         @Override
@@ -104,25 +99,41 @@ public class ConnectFragment extends Fragment implements AdapterView.OnItemSelec
                 text2.setText("No Smart Plugs Found");
             }
 
+            CustomAdapter adapter = new CustomAdapter(inflatedView.getContext(), unConnected);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    new connectAsync().execute(position);
+                }
+            });
+
         }
     }
 
+    //connect selected plug
+    public class connectAsync extends AsyncTask<Integer, Void, String> {
+
+        @Override
+        protected String doInBackground(Integer... params) {
+            //thisPlug.connectPlug("8b8389fb", appDriver.getNetwork(), unConnected.get(params[0]));
+            return "Done";
+        }
+        @Override
+        protected void onPostExecute(String result){
+            ((MainActivity) getActivity()).onBackPressed();
+        }
+    }
+
+    //run unconnectedAsync
     private void runAsync() {
 
         final Handler handler = new Handler();
-        Timer timer = new Timer();
-
-        TimerTask task = new TimerTask() {
-            @Override
+        handler.post(new Runnable() {
             public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        new unconnectedAsync().execute();
-                    }
-                });
+                new unconnectedAsync().execute();
             }
-        };
-        timer.schedule(task, 0, 1000);
+        });
     }
 
     //adapter to display plug list
@@ -163,14 +174,5 @@ public class ConnectFragment extends Fragment implements AdapterView.OnItemSelec
             return view;
         }
     }
-
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {}
-
 
 }

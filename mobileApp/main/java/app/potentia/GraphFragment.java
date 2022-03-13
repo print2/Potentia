@@ -83,16 +83,15 @@ public class GraphFragment extends Fragment {
 
     public void createGraph(){
         graph.removeAllSeries();
-        graph.getViewport().setMinX(0);
-        graph.getViewport().setMaxX(24);
+        graph.getViewport().setMinX(timePoints.get(0));
+        graph.getViewport().setMaxX(timePoints.get(timePoints.size()));
         graph.getViewport().setXAxisBoundsManual(true);
         series = new LineGraphSeries<>();
         for(int i = 0; i < timePoints.size(); i++){
             if(timePoints.size() == dataPoints.size()){
-//                x = timePoints.get(i);
-                x = i;
+                x = timePoints.get(i);
+//                x = i;
                 y = Double.parseDouble(dataPoints.get(i));
-//                Log.d("DataPoint: ", String.valueOf(y));
                 series.appendData(new DataPoint(x,y), true, timePoints.size());
             }
         }

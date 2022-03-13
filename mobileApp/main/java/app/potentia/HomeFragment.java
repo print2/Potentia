@@ -39,6 +39,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         appDriver = ((MainActivity) getActivity()).getAppDriver();
 
+        //empty list causes crash
         connectedNameList = appDriver.getConnectedProfiles();
         currentPlug = appDriver.getPlugByName(connectedNameList.get(0));
 
@@ -72,7 +73,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         @Override
         protected String doInBackground(Integer... params) {
             currentPlug = appDriver.getPlugByName(connectedNameList.get(params[0]));
-            reading = currentPlug.retrieveCurrUsage() + " W";
+            //reading = currentPlug.retrieveCurrUsage() + " W";
             return reading;
         }
         @Override

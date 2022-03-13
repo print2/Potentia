@@ -107,6 +107,14 @@ public class appDriver extends FlaskExecutor{
         plugProfileList.remove(plug);
     }
 
+    public void addAppliance(applianceProfile appliance){
+        applianceList.add(appliance);
+    }
+
+    public void removeAppliance(applianceProfile appliance){
+        applianceList.remove(appliance);
+    }
+
     public plugProfile getPlugByName(String profileName){
         for (plugProfile plug:plugProfileList){
             if (plug.getName().equals(profileName)){
