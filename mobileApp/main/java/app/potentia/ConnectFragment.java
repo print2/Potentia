@@ -1,7 +1,9 @@
 package app.potentia;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -104,7 +106,36 @@ public class ConnectFragment extends Fragment{
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    new connectAsync().execute(position);
+
+                    //dialog alert to connect
+                    AlertDialog.Builder builder = new AlertDialog.Builder(inflatedView.getContext());
+                    builder.setMessage("Are you sure you want to connect " + mPlugName + "to " + unConnected.get(position) + "?");
+                    builder.setCancelable(true);
+
+                    builder.setPositiveButton(
+                            "Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    connectAsync connectAsync = new connectAsync();
+                                    connectAsync.execute(position);
+                                    //while waiting to connect
+                                    while (connectAsync.getStatus() == Status.PENDING){
+                                        AlertDialog.Builder builder2 = new AlertDialog.Builder(inflatedView.getContext());
+                                        builder2.setMessage("Connecting...");
+                                    }
+                                }
+                            });
+                    builder.setNegativeButton(
+                            "No",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             });
 

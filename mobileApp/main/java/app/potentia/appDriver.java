@@ -1,3 +1,5 @@
+package app.potentia;
+
 import java.util.*;
 
 public class appDriver extends FlaskExecutor{
@@ -62,7 +64,7 @@ public class appDriver extends FlaskExecutor{
         plugProfileList.add(plug3);
 
     }
-    
+
     public ArrayList<String> getUnconnectedPlugs(){
         ArrayList<String> params = new ArrayList<>();
         String unconnectedString = execFlaskMethod("getUnconnected",params);
@@ -145,7 +147,7 @@ public class appDriver extends FlaskExecutor{
 
     public ArrayList<Integer> getGraphTimePoints(String timePeriod){
         int difference = timeValues.get(timePeriod) / this.numGraphDatapoints;
-        
+
         ArrayList<Integer> timePoints = new ArrayList<>();
         for (int i=0;i<this.numGraphDatapoints;i++){
             timePoints.add(i*difference);

@@ -150,8 +150,8 @@ public class AppliancesFragment extends Fragment {
                                 }
                             });
 
-                    AlertDialog alert11 = builder.create();
-                    alert11.show();
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             });
 
