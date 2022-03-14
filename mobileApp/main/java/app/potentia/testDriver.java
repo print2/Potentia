@@ -6,22 +6,28 @@ import java.lang.Thread;
 public class testDriver {
 
     public static void main(String[] args){
-        plugProfile plug = new plugProfile("Kitchen");
-        // plugProfile plug2 = new plugProfile("Lounge");
+        plugProfile plug = new plugProfile("PC");
+        plugProfile plug2 = new plugProfile("PhoneCharger");
         // plug.setIP("192.168.43.28");
         // plug.retrieveCurrUsage();
 
         appDriver potentia = new appDriver();
         
         ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
-        plug.connectPlug("8b8389fb","Mi 9 Lite",unconnected.get(0));
-        // plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(1));
+        // plug.connectPlug("a34d7b8e32","PLUSNET-SCN5",unconnected.get(0));
+        plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
 
-        ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Day");
+        // ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Day");
+        // ArrayList<Integer> timePoints = potentia.getGraphTimePoints("Day");
 
-        for(String point:dataPoints){
-            System.out.println(point);
-        }
+        // for(int i=0;i<dataPoints.size();i++){
+        //     System.out.println(dataPoints.get(i) + " " + timePoints.get(i));
+        // }
+
+        
+
+        // System.out.println(timePoints.size());
+        // System.out.println(dataPoints.size());
 
         //System.out.println(potentia.getNetwork());
         //ArrayList<String> connected = potentia.getConnectedPlugs();
