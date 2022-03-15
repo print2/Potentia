@@ -4,7 +4,8 @@ import java.lang.Thread;
 public class testDriver {
 
     public static void main(String[] args){
-        plugProfile plug = new plugProfile("PC");
+        applianceProfile test = new applianceProfile("test",false,1,2);
+        plugProfile plug = new plugProfile("PC",test);
         plugProfile plug2 = new plugProfile("PhoneCharger");
         // plug.setIP("192.168.43.28");
         // plug.retrieveCurrUsage();
@@ -16,10 +17,10 @@ public class testDriver {
         // plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
 
         ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Day");
-        ArrayList<String> timePoints = potentia.getGraphTimePoints("Day");
+        String[] timePoints = potentia.getGraphTimePoints("Day");
 
         for(int i=0;i<dataPoints.size();i++){
-            System.out.println(dataPoints.get(i) + " " + timePoints.get(i));
+            System.out.println(dataPoints.get(i) + " " + timePoints[i]);
         }
 
         
@@ -71,7 +72,10 @@ public class testDriver {
 //Thread in background running checks
     //isPlugOn checks
     //isProlongedOnDisable
+    //checkOff
     //isProlongedStandby
     //checkStandBy
 
     //when connect, call thread
+    //read plugPRofiles and appliance from db
+        //create all, make new arrayLIsts

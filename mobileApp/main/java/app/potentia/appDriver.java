@@ -145,11 +145,22 @@ public class appDriver extends FlaskExecutor{
         return datapointsList;
     }
 
-    public ArrayList<String> getGraphTimePoints(String timePeriod){
+    public String[] getGraphTimePoints(String timePeriod){
         int difference = timeValues.get(timePeriod) / this.numGraphDatapoints;
         long currEpoch = System.currentTimeMillis();
         
-        ArrayList<String> timePoints = new ArrayList<>();
+        // ArrayList<String> timePoints = new ArrayList<>();
+        // for (int i=this.numGraphDatapoints;i>0;i--){
+        //     long epoch = currEpoch - (i * difference * 1000);
+        //     Date date = new Date(epoch);
+        //     SimpleDateFormat format = new SimpleDateFormat("dd/MM hh:mm");
+        //     String formatted = format.format(date);
+        //     System.out.println(date);
+
+        //     timePoints.add(formatted);
+        // }
+
+        String[] timePoints = new String[this.numGraphDatapoints];
         for (int i=this.numGraphDatapoints;i>0;i--){
             long epoch = currEpoch - (i * difference * 1000);
             Date date = new Date(epoch);
@@ -157,7 +168,7 @@ public class appDriver extends FlaskExecutor{
             String formatted = format.format(date);
             System.out.println(date);
 
-            timePoints.add(formatted);
+            timePoints[this.numGraphDatapoints-i] = formatted;
         }
 
         return timePoints;

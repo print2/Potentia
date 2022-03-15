@@ -12,8 +12,8 @@ public class plugProfile extends FlaskExecutor{
 
     private boolean connectedToPlug = false;
 
-    private long timeTurnedOn;
-    private long timeStandBy;
+    private long timeTurnedOn = -1;
+    private long timeStandBy = -1;
 
     plugProfile(String name){
         this.name = name;
@@ -112,6 +112,8 @@ public class plugProfile extends FlaskExecutor{
         String result = execFlaskMethod("turnOff",params);
         if(result.equals("Turned Off")){
             poweredOn = false;
+            this.timeTurnedOn = -1;
+            this.timeStandBy = -1;
         }
     }
 
@@ -127,37 +129,36 @@ public class plugProfile extends FlaskExecutor{
         this.timeTurnedOn = System.currentTimeMillis() / 60000;
     }
 
-    public boolean isProlongedOnNotify(){
-        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilNotify()){
-            return true;
+    // public boolean isProlongedOnNotify(){
+    //     if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilNotify()){
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
+    public void isProlongedOnDisable(){
+        if((System.currentTimeMillis()/60000) - this.timeTurnedOn >= appliance.getTimeUntilDisable()){
+            powerOff();
         }
-        return false;
     }
 
-    public boolean isProlongedOnDisable(){
-        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilDisable()){
-            return true;
+    public void isProlongedStandByDisable(){
+        if((System.currentTimeMillis()/60000) - this.timeStandBy >= appliance.getTimeOnStandby()){
+            powerOff();
         }
-        return false;
     }
 
-    public boolean isProlongedStandByDisable(){
-        if((System.currentTimeMillis()/60000) - this.timeStandBy > appliance.getTimeOnStandby()){
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkStandby(){
+    public void checkStandby(){
         ArrayList<String> params = new ArrayList<>();
         params.add(this.name);
 
         String onStandby = execFlaskMethod("checkstandby",params);
-        if(onStandby.equals("True")){
-            return true;
+        if(onStandby.equals("True") && this.timeStandBy == -1){
+            this.timeStandBy = System.currentTimeMillis() / 60000;
         }
-        return false;
-
+        else{
+            this.timeStandBy = -1;
+        }
     }
 
     public String retrieveCurrUsage(){
@@ -181,7 +182,11 @@ public class plugProfile extends FlaskExecutor{
         this.connectedToPlug = true;
 
         changePlugAlias(name);
-        this.poweredOn = isPlugOn();
+        isPlugOn();
+
+        if(poweredOn){
+            this.timeTurnedOn = System.currentTimeMillis() / 60000;
+        }
 
         plugReader newReader = new plugReader(this);
         Thread newThread = new Thread(newReader);
@@ -205,16 +210,16 @@ public class plugProfile extends FlaskExecutor{
         String result = execFlaskMethod("readUsage",params);
     }
 
-    public boolean isPlugOn(){
+    public void isPlugOn(){
         ArrayList<String> params = new ArrayList<>();
         params.add(this.plugIP);
 
         String result = execFlaskMethod("isOn",params);
 
         if(result.equals("on")){
-            return true;
+            this.poweredOn = true;
         }
-        return false;
+        this.poweredOn = false;
     }
 
 

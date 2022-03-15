@@ -10,10 +10,10 @@ public class applianceProfile {
         this.permOn = permOn;
     }
 
-    public applianceProfile(String name, boolean permOn, int timeUntilNotify,int timeUntilDisable){
+    public applianceProfile(String name, boolean permOn, int timeUntilDisableSB,int timeUntilDisable){
         this.name = name;
         this.permOn = permOn;
-        this.timeUntilNotify = timeUntilNotify;
+        this.timeOnStandby = timeUntilDisableSB;
         this.timeUntilDisable = timeUntilDisable;
     }
 
