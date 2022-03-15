@@ -36,7 +36,7 @@
             android:id="@+id/connectText1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Connect to "
+            android:text="Your Appliances"
             android:textColor="@color/grey"
             android:textSize="26sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -45,22 +45,9 @@
             app:layout_constraintTop_toBottomOf="@+id/divider"
             app:layout_constraintVertical_bias="0.018" />
 
-        <TextView
-            android:id="@+id/connectText2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Searching..."
-            android:textColor="@color/grey"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider"
-            app:layout_constraintVertical_bias="0.096" />
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="480dp"
+            android:layout_height="520dp"
             android:layout_marginBottom="60dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -71,7 +58,7 @@
             tools:context=".MainActivity">
 
             <ListView
-                android:id="@+id/unconnectedList"
+                android:id="@+id/applianceList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -81,4 +68,16 @@
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="75dp"
+        app:srcCompat="@drawable/ic_add"
+        app:tint="@android:color/white"
+        android:contentDescription="@string/create_plug_profile" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

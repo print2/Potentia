@@ -64,7 +64,7 @@ public class appDriver extends FlaskExecutor{
         plugProfileList.add(plug3);
 
     }
-    
+
     public ArrayList<String> getUnconnectedPlugs(){
         ArrayList<String> params = new ArrayList<>();
         String unconnectedString = execFlaskMethod("getUnconnected",params);
@@ -107,6 +107,14 @@ public class appDriver extends FlaskExecutor{
 
     public void removePlugProfile(plugProfile plug){
         plugProfileList.remove(plug);
+    }
+
+    public void addAppliance(applianceProfile appliance){
+        applianceList.add(appliance);
+    }
+
+    public void removeAppliance(applianceProfile appliance){
+        applianceList.remove(appliance);
     }
 
     public plugProfile getPlugByName(String profileName){

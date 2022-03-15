@@ -28,8 +28,9 @@ android:padding="6dip" >
         android:layout_marginEnd="130dp"
         android:layout_toEndOf="@id/icon"
         android:gravity="center_vertical"
-        android:text=""
-        android:textSize="20sp" />
+        android:text="*Name*"
+        android:textSize="20sp"
+        android:textColor="@color/grey"/>
 
     <TextView
         android:id="@+id/applianceName"
@@ -43,7 +44,7 @@ android:padding="6dip" >
         android:layout_toEndOf="@id/icon"
         android:ellipsize="marquee"
         android:singleLine="true"
-        android:text=""
+        android:text="*Appliance*"
         android:textSize="16sp" />
 
     <TextView
@@ -58,17 +59,17 @@ android:padding="6dip" >
         android:layout_toEndOf="@id/icon"
         android:ellipsize="marquee"
         android:singleLine="true"
-        android:text=""
+        android:text="*Timer*"
         android:textSize="16sp" />
 
     <Button
         android:id="@+id/connect"
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:text="Connect"
         android:layout_marginStart="240dp"
         android:layout_marginTop="10dp"
-        android:textSize="12sp"/>
+        android:text="Connect"
+        android:textSize="12sp" />
 
 
 </RelativeLayout>

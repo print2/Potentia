@@ -10,23 +10,26 @@ import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-//TODO
-//add onSelectListener to profile
+
 public class PlugFragmentMain extends Fragment{
 
     public PlugFragmentMain() {
         // Required empty public constructor
     }
 
-    CreatePlugFragment createPlugFragment = new CreatePlugFragment();
+    private CreatePlugFragment createPlugFragment;
+    private ProfileFragment profileFragment;
+    private ConnectFragment connectFragment;
 
     private View inflatedView;
     private ListView listView;
@@ -51,10 +54,12 @@ public class PlugFragmentMain extends Fragment{
         CustomAdapter adapter = new CustomAdapter(inflatedView.getContext(), allPlugs);
         listView.setAdapter(adapter);
 
+
         add = inflatedView.findViewById(R.id.fab);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                createPlugFragment = new CreatePlugFragment();
                 ((MainActivity) getActivity()).forwardFragment(createPlugFragment);
             }
         });
@@ -92,10 +97,9 @@ public class PlugFragmentMain extends Fragment{
         @SuppressLint("ViewHolder")
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            //TODO
-            //add timer times
 
             view = inflater.inflate(R.layout.pluglist_view, viewGroup, false);
+            ImageView icon = view.findViewById(R.id.icon);
             TextView name = view.findViewById(R.id.profileName);
             TextView appliance = view.findViewById(R.id.applianceName);
             TextView timer = view.findViewById(R.id.timer);
@@ -103,13 +107,18 @@ public class PlugFragmentMain extends Fragment{
 
             plugProfile x = allPlugs.get(i);
 
-            String as = "Appliance: " + x.getAppliance().getName();
-            String ts = "";
+            name.setText(x.getName());
+            appliance.setText("Appliance: " + x.getAppliance().getName());
 
+            name.setText(x.getName());
             if(x.getAppliance().getPermOn()){
-                ts = "Timer: Always On";
-            } else if(!x.getAppliance().getPermOn()){
-                ts = "Timer: None";
+                timer.setText("Timer: Always On");
+            } else {
+                if (x.getAppliance().getTimeUntilDisable() > 0){
+                    timer.setText("Timer: " + x.getAppliance().getTimeUntilDisable() + " min");
+                } else {
+                    timer.setText("Timer: None");
+                }
             }
 
             if(x.getConnected()){
@@ -119,16 +128,19 @@ public class PlugFragmentMain extends Fragment{
                 connected.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ConnectFragment connectFragment = new ConnectFragment(x.getName());
+                        connectFragment = new ConnectFragment(x.getName());
                         ((MainActivity) getActivity()).forwardFragment(connectFragment);
                     }
                 });
             }
 
-            name.setText(x.getName());
-            appliance.setText(as);
-            timer.setText(ts);
-
+            icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    profileFragment = new ProfileFragment(x.getName());
+                    ((MainActivity) getActivity()).forwardFragment(profileFragment);
+                }
+            });
             return view;
         }
     }
