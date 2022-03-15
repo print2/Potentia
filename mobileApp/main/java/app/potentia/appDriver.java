@@ -161,12 +161,11 @@ public class appDriver extends FlaskExecutor{
         // }
 
         String[] timePoints = new String[this.numGraphDatapoints];
-        for (int i=this.numGraphDatapoints;i>0;i--){
+        for (int i=this.numGraphDatapoints-1;i>0;i = i-this.numGraphDatapoints/4){
             long epoch = currEpoch - (i * difference * 1000);
             Date date = new Date(epoch);
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM hh:mm");
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM HH:mm");
             String formatted = format.format(date);
-            System.out.println(date);
 
             timePoints[this.numGraphDatapoints-i] = formatted;
         }

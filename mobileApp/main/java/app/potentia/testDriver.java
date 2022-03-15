@@ -12,15 +12,19 @@ public class testDriver {
 
         appDriver potentia = new appDriver();
         
-        // ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
+        ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
         // plug2.connectPlug("a34d7b8e32","PLUSNET-SCN5",unconnected.get(0));
-        // plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
+        // plug.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
+// 
+        ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Week");
+        String[] timePoints = potentia.getGraphTimePoints("Week");
 
-        ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Day");
-        String[] timePoints = potentia.getGraphTimePoints("Day");
+        // for(int i=0;i<dataPoints.size();i++){
+        //     System.out.println(dataPoints.get(i) + " " );
+        // }
 
-        for(int i=0;i<dataPoints.size();i++){
-            System.out.println(dataPoints.get(i) + " " + timePoints[i]);
+        for(String date:timePoints){
+            System.out.println(date);
         }
 
         
