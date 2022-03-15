@@ -150,6 +150,18 @@ public class plugProfile extends FlaskExecutor{
         return false;
     }
 
+    public boolean checkStandby(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(this.name);
+
+        String onStandby = execFlaskMethod("checkstandby",params);
+        if(onStandby.equals("True")){
+            return true;
+        }
+        return false;
+
+    }
+
     public String retrieveCurrUsage(){
         ArrayList<String> params = new ArrayList<>();
         params.add(this.plugIP);

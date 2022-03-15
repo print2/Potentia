@@ -1,4 +1,6 @@
 import java.util.*;
+import java.time.*;
+import java.text.*;
 
 public class appDriver extends FlaskExecutor{
     private ArrayList<applianceProfile> applianceList = new ArrayList<>();
@@ -135,12 +137,19 @@ public class appDriver extends FlaskExecutor{
         return datapointsList;
     }
 
-    public ArrayList<Integer> getGraphTimePoints(String timePeriod){
+    public ArrayList<String> getGraphTimePoints(String timePeriod){
         int difference = timeValues.get(timePeriod) / this.numGraphDatapoints;
+        long currEpoch = System.currentTimeMillis();
         
-        ArrayList<Integer> timePoints = new ArrayList<>();
-        for (int i=0;i<this.numGraphDatapoints;i++){
-            timePoints.add(i*difference);
+        ArrayList<String> timePoints = new ArrayList<>();
+        for (int i=this.numGraphDatapoints;i>0;i--){
+            long epoch = currEpoch - (i * difference * 1000);
+            Date date = new Date(epoch);
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM hh:mm");
+            String formatted = format.format(date);
+            System.out.println(date);
+
+            timePoints.add(formatted);
         }
 
         return timePoints;

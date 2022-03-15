@@ -11,16 +11,16 @@ public class testDriver {
 
         appDriver potentia = new appDriver();
         
-        ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
-        // plug.connectPlug("a34d7b8e32","PLUSNET-SCN5",unconnected.get(0));
-        plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
+        // ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
+        // plug2.connectPlug("a34d7b8e32","PLUSNET-SCN5",unconnected.get(0));
+        // plug2.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
 
-        // ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Day");
-        // ArrayList<Integer> timePoints = potentia.getGraphTimePoints("Day");
+        ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Day");
+        ArrayList<String> timePoints = potentia.getGraphTimePoints("Day");
 
-        // for(int i=0;i<dataPoints.size();i++){
-        //     System.out.println(dataPoints.get(i) + " " + timePoints.get(i));
-        // }
+        for(int i=0;i<dataPoints.size();i++){
+            System.out.println(dataPoints.get(i) + " " + timePoints.get(i));
+        }
 
         
 
@@ -66,3 +66,12 @@ public class testDriver {
 
     }
 }
+
+//Dates on graphs
+//Thread in background running checks
+    //isPlugOn checks
+    //isProlongedOnDisable
+    //isProlongedStandby
+    //checkStandBy
+
+    //when connect, call thread

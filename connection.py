@@ -122,8 +122,6 @@ async def readSingle(plug):
             readings+=1
             usefulMac = plug.hw_info['mac'][12:]
 
-            print(minute)
-            print(datetime.now().minute)
             if minute!=datetime.now().minute:
                 avgPower = round(total/readings,3)
                 post={"name": plug.alias,"Power": avgPower, "date/time": int(time())}
