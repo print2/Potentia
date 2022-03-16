@@ -103,24 +103,57 @@ public class appDriver extends FlaskExecutor{
 
     public void addPlugProfile(plugProfile plug){
         plugProfileList.add(plug);
+
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plug.getName());
+        params.add(plug.getDescription());
+        params.add(plug.getAppliance.getName());
+
+        result = execFlaskMethod("addProfile",params);
     }
 
     public void removePlugProfile(plugProfile plug){
         plugProfileList.remove(plug);
+        
+        ArrayList<String> params = new ArrayList<>();
+        params.add(plug.getName());
+
+        result = execFlaskMethod("deleteProfile",params);
     }
 
     public void addAppliance(applianceProfile appliance){
-        applianceList.add(appliance);
+        applianceList.add(appliance);          
+    
+        ArrayList<String> params = new ArrayList<>();
+        params.add(appliance.getName());
+        params.add(Boolean.toString(appliance.getPermOn()));
+        params.add(Integer.toString(appliance.getTimeUntilDisable()))
+
+        result = execFlaskMethod("addApplianceProfile",params);
     }
 
     public void removeAppliance(applianceProfile appliance){
         applianceList.remove(appliance);
+
+        ArrayList<String> params = new ArrayList<>();
+        params.add(appliance.getName());
+        
+        result = execFlaskMethod("deleteApplianceProfile",params);
     }
 
     public plugProfile getPlugByName(String profileName){
         for (plugProfile plug:plugProfileList){
             if (plug.getName().equals(profileName)){
                 return plug;
+            }
+        }
+        return null;
+    }
+
+    public applianceProfile getApplianceByName(String applianceName){
+        for (applianceProfile appliance:applianceList){
+            if(appliance.getName().equals(applianceName)){
+                return appliance;
             }
         }
         return null;
@@ -148,28 +181,29 @@ public class appDriver extends FlaskExecutor{
     public String[] getGraphTimePoints(String timePeriod){
         int difference = timeValues.get(timePeriod) / this.numGraphDatapoints;
         long currEpoch = System.currentTimeMillis();
-        
-        // ArrayList<String> timePoints = new ArrayList<>();
-        // for (int i=this.numGraphDatapoints;i>0;i--){
-        //     long epoch = currEpoch - (i * difference * 1000);
-        //     Date date = new Date(epoch);
-        //     SimpleDateFormat format = new SimpleDateFormat("dd/MM hh:mm");
-        //     String formatted = format.format(date);
-        //     System.out.println(date);
-
-        //     timePoints.add(formatted);
-        // }
+        String strFormat = "";
+        if(timePeriod == "Hour" || timePeriod == "Day"){
+            strFormat = "HH:mm";
+        }
+        else{
+            strFormat = "dd/MM";
+        }
 
         String[] timePoints = new String[this.numGraphDatapoints];
-        for (int i=this.numGraphDatapoints-1;i>0;i = i-this.numGraphDatapoints/4){
+        for (int i=this.numGraphDatapoints-1;i>=0;i--){
             long epoch = currEpoch - (i * difference * 1000);
             Date date = new Date(epoch);
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM HH:mm");
+            SimpleDateFormat format = new SimpleDateFormat(strFormat);
             String formatted = format.format(date);
 
-            timePoints[this.numGraphDatapoints-i] = formatted;
+            timePoints[this.numGraphDatapoints-(i+1)] = formatted;
         }
 
         return timePoints;
     }
+
+    //load profiles
+    //delete profile
+    //add profile
+    //for appliance and plug
 }

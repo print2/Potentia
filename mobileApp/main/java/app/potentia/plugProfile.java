@@ -137,7 +137,7 @@ public class plugProfile extends FlaskExecutor{
     // }
 
     public void isProlongedOnDisable(){
-        if((System.currentTimeMillis()/60000) - this.timeTurnedOn >= appliance.getTimeUntilDisable()){
+        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilDisable() && this.timeTurnedOn != -1){
             powerOff();
         }
     }
@@ -188,9 +188,13 @@ public class plugProfile extends FlaskExecutor{
             this.timeTurnedOn = System.currentTimeMillis() / 60000;
         }
 
+        bgChecks checker = new bgChecks(this);
+        Thread bgThread = new Thread(checker);
+        bgThread.start();
+
         plugReader newReader = new plugReader(this);
-        Thread newThread = new Thread(newReader);
-        newThread.start();
+        Thread readerThread = new Thread(newReader);
+        readerThread.start();
     }
 
     public void changePlugAlias(String alias){
@@ -215,11 +219,18 @@ public class plugProfile extends FlaskExecutor{
         params.add(this.plugIP);
 
         String result = execFlaskMethod("isOn",params);
-
+        System.out.println(result);
         if(result.equals("on")){
-            this.poweredOn = true;
+            if(!poweredOn){
+                this.poweredOn = true;
+                this.timeTurnedOn = System.currentTimeMillis()/60000;
+            }
         }
-        this.poweredOn = false;
+        else{
+            this.poweredOn = false;
+            this.timeTurnedOn = -1;
+        }
+        
     }
 
 

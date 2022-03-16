@@ -61,19 +61,23 @@ def getApplianceProfiles():
 def addPlugProfile(name,description,applianceName):
     post={"_id": name,"description": description, "applianceName": applianceName}
     db["Profiles"].insert_one(post)
+    return dumps("Done")
 
-@app.route('/addapplianceprofile/<name>&<permOn>&<timeuntildisable>')
+@app.route('/addApplianceProfile/<name>&<permOn>&<timeuntildisable>')
 def addApplianceProfile(name,permOn,timeUntilDisable):
     post={"_id": name,"permOn": permOn, "timeUntilDisable": timeUntilDisable}
     db["Appliances"].insert_one(post)
+    return dumps("Done")
 
 @app.route('/deleteProfile/<name>')
 def deletePlugProfile(name):
     db["Profiles"].delete_many({"_id":name})
+    return dumps("Done")
 
 @app.route('/deleteApplianceProfile/<name>')
 def deleteApplianceProfile(name):
     db["Appliances"].delete_many({"_id":name})
+    return dumps("Done")
 
 def getMonth(currDay,currMonth):
     #determines if the month has changed

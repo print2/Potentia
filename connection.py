@@ -299,4 +299,4 @@ if __name__ == "__main__":
 
 
 #delay when plug connects before it reads - seems to pause all threads*
-# do we need to move DB post within try
+# do we need to move DB post within trys
