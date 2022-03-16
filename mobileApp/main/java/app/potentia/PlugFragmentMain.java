@@ -3,6 +3,7 @@ package app.potentia;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,6 +40,7 @@ public class PlugFragmentMain extends Fragment{
     private ArrayList <applianceProfile> allAppliances = new ArrayList<applianceProfile>();
 
     private FloatingActionButton add;
+    private Boolean isOn = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,18 +110,23 @@ public class PlugFragmentMain extends Fragment{
             plugProfile x = allPlugs.get(i);
 
             name.setText(x.getName());
-            appliance.setText("Appliance: " + x.getAppliance().getName());
 
-            name.setText(x.getName());
-            if(x.getAppliance().getPermOn()){
-                timer.setText("Timer: Always On");
-            } else {
-                if (x.getAppliance().getTimeUntilDisable() > 0){
-                    timer.setText("Timer: " + x.getAppliance().getTimeUntilDisable() + " min");
+            if(x.getAppliance() != null){
+                appliance.setText("Appliance: " + x.getAppliance().getName());
+                if(x.getAppliance().getPermOn()){
+                    timer.setText("Timer: Always On");
                 } else {
-                    timer.setText("Timer: None");
+                    if (x.getAppliance().getTimeUntilDisable() > 0){
+                        timer.setText("Timer: " + x.getAppliance().getTimeUntilDisable() + " min");
+                    } else {
+                        timer.setText("Timer: None");
+                    }
                 }
+            } else {
+                appliance.setText("Appliance: None");
+                timer.setText("Timer: None");
             }
+
 
             if(x.getConnected()){
                 connected.setText("Connected");
@@ -134,6 +141,9 @@ public class PlugFragmentMain extends Fragment{
                 });
             }
 
+            if(x.isOn()){
+                icon.setColorFilter(getResources().getColor(R.color.teal_700));
+            }
             icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

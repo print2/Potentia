@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,11 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private ArrayList<String> connectedNameList = new ArrayList<String>();
     private plugProfile currentPlug;
 
+    private Async update;
+    private Timer timer;
+    private TimerTask task;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -38,13 +44,14 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         this.inflatedView = inflater.inflate(R.layout.fragment_home, container, false);
 
         appDriver = ((MainActivity) getActivity()).getAppDriver();
-
-        //empty list causes crash
         connectedNameList = appDriver.getConnectedProfiles();
-        currentPlug = appDriver.getPlugByName(connectedNameList.get(0));
 
-        currentAsyncTask(0);
-
+        if(connectedNameList.size() > 0){
+            currentPlug = appDriver.getPlugByName(connectedNameList.get(0));
+        } else {
+            StarterFragment starterFragment = new StarterFragment();
+            ((MainActivity) getActivity()).switchFragment(starterFragment);
+        }
         currentUsage = inflatedView.findViewById(R.id.currentUsage);
         dropdown = inflatedView.findViewById(R.id.dropdown);
 
@@ -58,14 +65,14 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+        ((MainActivity) getActivity()).stopAsyncReadings();
         currentAsyncTask(position);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        currentAsyncTask(0);
-    }
 
+    }
 
     //gets list of names of connected plugs
     //gets current reading of selected
@@ -73,7 +80,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         @Override
         protected String doInBackground(Integer... params) {
             currentPlug = appDriver.getPlugByName(connectedNameList.get(params[0]));
-            //reading = currentPlug.retrieveCurrUsage() + " W";
+            reading = currentPlug.retrieveCurrUsage() + " W";
             return reading;
         }
         @Override
@@ -86,14 +93,13 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private void currentAsyncTask(int i) {
 
         final Handler handler = new Handler();
-        Timer timer = new Timer();
-
-        TimerTask task = new TimerTask() {
+        timer = new Timer();
+        task = new TimerTask() {
             @Override
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
-                        Async update = (Async) new Async().execute(i);
+                        update = (Async) new Async().execute(i);
                     }
                 });
             }
@@ -103,6 +109,17 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     public plugProfile getCurrentPlug(){
         return currentPlug;
+    }
+    public AsyncTask getAsync(){
+        return  update;
+    }
+
+    public Timer getTimer(){
+        return timer;
+    }
+
+    public TimerTask getTimerTask(){
+        return task;
     }
 
 }
