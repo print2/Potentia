@@ -49,7 +49,7 @@ public class appDriver extends FlaskExecutor{
         timeValues.put("Week",604800);
         timeValues.put("4Week",2419200);
 
-        plug1 = new plugProfile("Plug1", applianceList.get(0));
+        // plug1 = new plugProfile("Plug1", applianceList.get(0));
         // plug2 = new plugProfile("Plug2", applianceList.get(1));
         // plug3 = new plugProfile("Plug3", applianceList.get(2));
 
@@ -59,7 +59,7 @@ public class appDriver extends FlaskExecutor{
         // plug2.setConnected(true);
         // plug2.setIP("192.168.43.28");
 
-        plugProfileList.add(plug1);
+        // plugProfileList.add(plug1);
         // plugProfileList.add(plug2);
         // plugProfileList.add(plug3);
 
@@ -232,6 +232,24 @@ public class appDriver extends FlaskExecutor{
             Boolean.parseBoolean(applianceDetails.get(1)),10,Integer.parseInt(applianceDetails.get(2)));
             applianceList.add(newAppliance);
         }
+    }
+
+    public boolean isPlugUnique(String name){
+        for (plugProfile plug:plugProfileList){
+            if (plug.getName().equals(name)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isApplianceUnique(String name){
+        for (applianceProfile appliance:applianceList){
+            if (appliance.getName().equals(name)){
+                return false;
+            }
+        }
+        return true;
     }
 
     //load profiles

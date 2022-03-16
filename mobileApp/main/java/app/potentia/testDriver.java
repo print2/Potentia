@@ -20,16 +20,16 @@ public class testDriver {
         // potentia.removeAppliance(test);
         // potentia.removeAppliance(test2);
 
-        for(plugProfile plug:potentia.getPlugList()){
-            System.out.println(plug.getName());
-        }
+        // for(plugProfile plug:potentia.getPlugList()){
+        //     System.out.println(plug.getName());
+        // }
 
-        potentia.loadApplianceProfiles();
-        potentia.loadPlugProfiles();
+        // potentia.loadApplianceProfiles();
+        // potentia.loadPlugProfiles();
 
-        for(plugProfile plug:potentia.getPlugList()){
-            System.out.println(plug.getName());
-        }
+        // for(plugProfile plug:potentia.getPlugList()){
+        //     System.out.println(plug.getName());
+        // }
 
         // potentia.removePlugProfile(plug);
         // potentia.addAppliance(test);
@@ -43,7 +43,7 @@ public class testDriver {
         // plug.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
 // 
         // ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Week");
-        // String[] timePoints = potentia.getGraphTimePoints("Day");
+        String[] timePoints = potentia.getGraphTimePoints("Hour");
 
         // for(int i=0;i<dataPoints.size();i++){
         //     System.out.println(dataPoints.get(i) + " " );
