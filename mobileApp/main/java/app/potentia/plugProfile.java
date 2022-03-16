@@ -137,7 +137,7 @@ public class plugProfile extends FlaskExecutor{
     // }
 
     public void isProlongedOnDisable(){
-        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilDisable() && this.timeTurnedOn != -1){
+        if((System.currentTimeMillis()/60000) - this.timeTurnedOn > appliance.getTimeUntilDisable() && this.timeTurnedOn != -1 && appliance.getTimeUntilDisable() != -1){
             powerOff();
         }
     }

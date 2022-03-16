@@ -211,7 +211,6 @@ public class appDriver extends FlaskExecutor{
 
         for (String plug:listOfPlugs){
             ArrayList<String> plugDetails = stringToList(plug,'|');
-
             plugProfile newPlug = new plugProfile(plugDetails.get(0),
             getApplianceByName(plugDetails.get(2)),plugDetails.get(1));
             plugProfileList.add(newPlug);

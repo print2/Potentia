@@ -107,3 +107,4 @@ public class testDriver {
     //when connect, call thread
     //read plugPRofiles and appliance from db
         //create all, make new arrayLIsts
+
