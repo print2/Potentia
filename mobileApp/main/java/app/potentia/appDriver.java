@@ -6,7 +6,7 @@ public class appDriver extends FlaskExecutor{
     private ArrayList<applianceProfile> applianceList = new ArrayList<>();
     private ArrayList<plugProfile> plugProfileList = new ArrayList<>();
 
-    private applianceProfile fridge = new applianceProfile("Fridge", true);
+    private applianceProfile fridge = new applianceProfile("Fridge", true,-1,-1);
     private applianceProfile kettle = new applianceProfile("Kettle",false,10,20);
     private applianceProfile charger = new applianceProfile("Charger",false,180,0);
     private applianceProfile microwave = new applianceProfile("Microwave",false,60,120);
@@ -15,7 +15,7 @@ public class appDriver extends FlaskExecutor{
     private applianceProfile dishwasher = new applianceProfile("Dishwasher",false,180,120);
     private applianceProfile electricBlanket = new applianceProfile("Electric Blanket",false,180,60);
     private applianceProfile electricHeater = new applianceProfile("Electric Heater",false,120,60);
-    private applianceProfile freezer = new applianceProfile("Freezer",true);
+    private applianceProfile freezer = new applianceProfile("Freezer",true,-1,-1);
     private applianceProfile oven = new applianceProfile("Oven",false,240,120);
     private applianceProfile toaster = new applianceProfile("Toaster",false,10,10);
     private applianceProfile washingMachine = new applianceProfile("Washing Machine",false,240,120);
