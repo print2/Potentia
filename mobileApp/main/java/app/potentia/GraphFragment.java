@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -31,7 +32,7 @@ public class GraphFragment extends Fragment {
     private LineGraphSeries<DataPoint> series;
     private GraphView graph;
     private String timeSpace;
-    private ArrayList<Integer> timePoints;
+    private String[] timePoints;
     private ArrayList<String> dataPoints;
     private double x, y;
 
@@ -62,9 +63,15 @@ public class GraphFragment extends Fragment {
             public void onTabUnselected(TabLayout.Tab tab) {}
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            public void onTabReselected(TabLayout.Tab tab) {
+                timeSpace = tab.getText().toString();
+                new graphAsync().execute(timeSpace);
+            }
         });
-
+        TabLayout.Tab tab = tabLayout.getTabAt(0);
+        if(currentPlug != null){
+            tab.select();
+        }
         return inflatedView;
     }
 
@@ -83,18 +90,19 @@ public class GraphFragment extends Fragment {
 
     public void createGraph(){
         graph.removeAllSeries();
-        graph.getViewport().setMinX(timePoints.get(0));
-        graph.getViewport().setMaxX(timePoints.get(timePoints.size()));
-        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setScrollable(true);
+
         series = new LineGraphSeries<>();
-        for(int i = 0; i < timePoints.size(); i++){
-            if(timePoints.size() == dataPoints.size()){
-                x = timePoints.get(i);
-//                x = i;
+        for(int i = 0; i < timePoints.length; i++){
+            if(timePoints.length == dataPoints.size()){
+                x = i;
                 y = Double.parseDouble(dataPoints.get(i));
-                series.appendData(new DataPoint(x,y), true, timePoints.size());
+                series.appendData(new DataPoint(x,y), true, timePoints.length);
             }
         }
         graph.addSeries(series);
+        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+        staticLabelsFormatter.setHorizontalLabels(new String []{null, timePoints[3], timePoints[11], timePoints[19], null});
+        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
     }
 }

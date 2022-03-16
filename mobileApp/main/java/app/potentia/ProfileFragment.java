@@ -36,7 +36,7 @@ public class ProfileFragment extends Fragment {
     private ImageView edit;
     private ImageView delete;
     private ImageView power;
-    private Button disconnect;
+    private Button connect;
 
     public ProfileFragment(String plugName) {
         this.mPlugName = plugName;
@@ -86,7 +86,7 @@ public class ProfileFragment extends Fragment {
         delete = inflatedView.findViewById(R.id.delete);
         power = inflatedView.findViewById(R.id.power);
 
-        disconnect = inflatedView.findViewById(R.id.disconnect);
+        connect = inflatedView.findViewById(R.id.connect);
 
         //profile info
         name.setText(mPlugName);
@@ -95,29 +95,29 @@ public class ProfileFragment extends Fragment {
         }
         if(thisPlug.getAppliance() != null){
             appliance.setText(thisPlug.getAppliance().getName());
+            if(thisPlug.getAppliance().getPermOn()){
+                timer.setText("Always On");
+            } else {
+                if (thisPlug.getAppliance().getTimeUntilDisable() > 0){
+                    timer.setText(thisPlug.getAppliance().getTimeUntilDisable() + " min");
+                } else {
+                    timer.setText("None");
+                }
+            }
         } else {
             appliance.setText("None");
-        }
-        if(thisPlug.getAppliance().getPermOn()){
-            timer.setText("Always On");
-        } else {
-            if (thisPlug.getAppliance().getTimeUntilDisable() > 0){
-                timer.setText("Timer: " + thisPlug.getAppliance().getTimeUntilDisable() + " min");
-            } else {
-                timer.setText("Timer: None");
-            }
+            timer.setText("None");
         }
 
         //connections
         if(thisPlug.getConnected()){
             status.setText("Connected");
             ip.setText(thisPlug.getIP());
-            disconnect.setText("Disconnect");
-            disconnect.setBackgroundColor(Color.GRAY);
+            connect.setVisibility(View.GONE);
         } else {
             status.setText("Not connected");
             ip.setText("N/A");
-            disconnect.setOnClickListener(new View.OnClickListener() {
+            connect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     connectFragment = new ConnectFragment(mPlugName);
@@ -166,6 +166,7 @@ public class ProfileFragment extends Fragment {
                 updatePower();
             }
         });
+
 
         return inflatedView;
     }

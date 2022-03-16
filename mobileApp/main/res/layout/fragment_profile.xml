@@ -117,7 +117,7 @@
             android:id="@+id/smText2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apppliance: "
+            android:text="Appliance: "
             android:textColor="@color/grey"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -241,7 +241,7 @@
             app:layout_constraintVertical_bias="0.635" />
 
         <Button
-            android:id="@+id/disconnect"
+            android:id="@+id/connect"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:text="Connect"

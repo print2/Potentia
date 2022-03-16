@@ -18,5 +18,8 @@
     <string name="turn_on_off_manually">Turn on/off manually</string>
     <string name="always_on">Always On</string>
     <string name="set_a_timer">Set a Timer</string>
+    <string name="starter_text1">There are no Smart Plugs connected in your app yet.</string>
+    <string name="starter_text2">To get started go to the plugs tab to create and connect your first plug!</string>
+
 
 </resources>

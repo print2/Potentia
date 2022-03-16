@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -39,7 +40,11 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
 
     private ArrayList<applianceProfile> applianceProfiles;
     private ArrayList<String> applianceNames = new ArrayList<>();
+    private Boolean hasDescription = false;
+    private Boolean hasAppliance = false;
     private int pos;
+
+    private plugProfile plug;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +64,7 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
 
         //appliance list
         applianceProfiles = appDriver.getApplianceList();
+        applianceNames.clear();
         applianceNames.add("None");
         for(int i = 0; i < applianceProfiles.size(); i++){
             applianceNames.add(applianceProfiles.get(i).getName());
@@ -85,23 +91,26 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
         description = inflatedView.findViewById(R.id.description);
 
         create.setOnClickListener(new View.OnClickListener() {
-            plugProfile plug;
 
             @Override
             public void onClick(View view) {
                 sName = name.getText().toString();
 
                 if (validateForm()){
-                    //crashes
-                    if(description.length() > 0 && pos > 0){
+
+                    plug = new plugProfile(sName);
+                    if(hasDescription && hasAppliance){
                         sDescription = description.getText().toString();
-                        plug = new plugProfile(sName, applianceProfiles.get(pos - 1), sDescription);
-                    } else if (description.length() > 0){
+                        plug = new plugProfile(sName, applianceProfiles.get(pos-1), sDescription);
+
+                    } else if (hasDescription && !hasAppliance){
                         sDescription = description.getText().toString();
                         plug = new plugProfile(sName, sDescription);
-                    } else if (pos > 0){
-                        plug = new plugProfile(sName, applianceProfiles.get(pos - 1));
-                    } else {
+
+                    } else if (!hasDescription && hasAppliance){
+                        plug = new plugProfile(sName, applianceProfiles.get(pos-1));
+
+                    } else if (!hasDescription && !hasAppliance){
                         plug = new plugProfile(sName);
                     }
                     appDriver.addPlugProfile(plug);
@@ -119,14 +128,21 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        pos = 0;
     }
 
     public Boolean validateForm(){
-        if (TextUtils.isEmpty(sName)){
+        if (name.length() == 0){
             name.setError("Please enter a name");
             return false;
         } else {
+            if(description.length() > 0){
+                hasDescription = true;
+            }
+            if(pos == 0){
+                hasAppliance = false;
+            } else {
+                hasAppliance = true;
+            }
             return true;
         }
     }

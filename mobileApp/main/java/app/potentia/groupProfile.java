@@ -1,3 +1,5 @@
+package app.potentia;
+
 import java.util.*;
 
 public class groupProfile {

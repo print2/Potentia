@@ -2,6 +2,7 @@ package app.potentia;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -90,7 +91,12 @@ public class ConnectFragment extends Fragment{
 
         @Override
         protected String doInBackground(Void... params) {
-            //unConnected = appDriver.getUnconnectedPlugs();
+            try{
+                unConnected = appDriver.getUnconnectedPlugs();
+            } catch (Exception e){
+
+            }
+
             return "Done";
         }
         @Override
@@ -119,11 +125,6 @@ public class ConnectFragment extends Fragment{
 
                                     connectAsync connectAsync = new connectAsync();
                                     connectAsync.execute(position);
-                                    //while waiting to connect
-                                    while (connectAsync.getStatus() == Status.PENDING){
-                                        AlertDialog.Builder builder2 = new AlertDialog.Builder(inflatedView.getContext());
-                                        builder2.setMessage("Connecting...");
-                                    }
                                 }
                             });
                     builder.setNegativeButton(
@@ -145,13 +146,24 @@ public class ConnectFragment extends Fragment{
     //connect selected plug
     public class connectAsync extends AsyncTask<Integer, Void, String> {
 
+        private ProgressDialog mProgress;
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            mProgress = new ProgressDialog(inflatedView.getContext());
+            mProgress.setMessage("Connecting...");
+            mProgress.show();
+        }
+
         @Override
         protected String doInBackground(Integer... params) {
-            //thisPlug.connectPlug("8b8389fb", appDriver.getNetwork(), unConnected.get(params[0]));
+            thisPlug.connectPlug("8b8389fb", appDriver.getNetwork(), unConnected.get(params[0]));
             return "Done";
         }
         @Override
         protected void onPostExecute(String result){
+            mProgress.dismiss();
             ((MainActivity) getActivity()).onBackPressed();
         }
     }
