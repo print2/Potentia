@@ -4,17 +4,43 @@ import java.lang.Thread;
 public class testDriver {
 
     public static void main(String[] args){
-        applianceProfile test = new applianceProfile("test",false,1,2);
-        plugProfile plug = new plugProfile("PC",test);
-        plugProfile plug2 = new plugProfile("PhoneCharger");
+        // applianceProfile test = new applianceProfile("test",false,10,2);
+        // applianceProfile test2  = new applianceProfile("test2",false,10,5);
+        // plugProfile plug = new plugProfile("PC",test,"Description");
+        // plugProfile plug2 = new plugProfile("PhoneCharger",test2,"Desc2");
         // plug.setIP("192.168.43.28");
         // plug.retrieveCurrUsage();
 
-        appDriver potentia = new appDriver();
         
-        ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
+
+        appDriver potentia = new appDriver();
+
+        // potentia.removePlugProfile(plug);
+        // potentia.removePlugProfile(plug2);
+        // potentia.removeAppliance(test);
+        // potentia.removeAppliance(test2);
+
+        for(plugProfile plug:potentia.getPlugList()){
+            System.out.println(plug.getName());
+        }
+
+        potentia.loadApplianceProfiles();
+        potentia.loadPlugProfiles();
+
+        for(plugProfile plug:potentia.getPlugList()){
+            System.out.println(plug.getName());
+        }
+
+        // potentia.removePlugProfile(plug);
+        // potentia.addAppliance(test);
+        // potentia.addAppliance(test2);
+        // potentia.addPlugProfile(plug2);
+        
+        // potentia.loadPlugProfiles();
+        
+        // ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
         // plug2.connectPlug("a34d7b8e32","PLUSNET-SCN5",unconnected.get(0));
-        plug.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
+        // plug.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
 // 
         // ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Week");
         // String[] timePoints = potentia.getGraphTimePoints("Day");

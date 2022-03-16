@@ -46,15 +46,15 @@ public class FlaskExecutor {
         }
     }
 
-    protected ArrayList<String> stringToList(String string){
+    protected ArrayList<String> stringToList(String string,char cutChar){
         ArrayList<String> list = new ArrayList<>();
 
-        int cutoff = string.indexOf('|');
+        int cutoff = string.indexOf(cutChar);
 
         while (cutoff != -1){
             list.add(string.substring(0,cutoff));
             string = string.substring(cutoff+1,string.length());
-            cutoff = string.indexOf('|');
+            cutoff = string.indexOf(cutChar);
         }
 
         if(!string.equals("")){

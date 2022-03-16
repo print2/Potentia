@@ -174,7 +174,7 @@ public class plugProfile extends FlaskExecutor{
         params.add(ssid.replace(' ','~'));
 
         String plugInfo = execFlaskMethod("connectSingle",params);
-        ArrayList<String> infoList = stringToList(plugInfo);
+        ArrayList<String> infoList = stringToList(plugInfo,'|');
 
         this.plugIP = infoList.get(0);
         this.plugMAC = infoList.get(1);

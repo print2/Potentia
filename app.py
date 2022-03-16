@@ -51,19 +51,29 @@ def calculateAverageUsage(name,timeStart,timeEnd):
 
 @app.route('/profiles/', methods=["GET"])
 def getPlugProfiles():
-    return dumps(db["Profiles"].find())
+    string = ""
+    results =  db["Profiles"].find()
+    for record in results:
+        string = string + record["_id"] + "|" + record["description"] + "|" + record["applianceName"] + "#"
+    string = string[:-1]
+    return dumps(string)
 
-@app.route('/applianceprofile/', methods=["GET"])
+@app.route('/applianceProfile/', methods=["GET"])
 def getApplianceProfiles():
-    return dumps(db["Appliances"].find())
+    string = ""
+    results =  db["Appliances"].find()
+    for record in results:
+        string = string + record["_id"] + "|" + record["permOn"] + "|" + record["timeUntilDisable"] + "#"
+    string = string[:-1]
+    return dumps(string)
 
-@app.route('/addProfile/<name>&<description>&<appliancename>')
+@app.route('/addProfile/<name>&<description>&<applianceName>')
 def addPlugProfile(name,description,applianceName):
     post={"_id": name,"description": description, "applianceName": applianceName}
     db["Profiles"].insert_one(post)
     return dumps("Done")
 
-@app.route('/addApplianceProfile/<name>&<permOn>&<timeuntildisable>')
+@app.route('/addApplianceProfile/<name>&<permOn>&<timeUntilDisable>')
 def addApplianceProfile(name,permOn,timeUntilDisable):
     post={"_id": name,"permOn": permOn, "timeUntilDisable": timeUntilDisable}
     db["Appliances"].insert_one(post)

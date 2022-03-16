@@ -50,18 +50,18 @@ public class appDriver extends FlaskExecutor{
         timeValues.put("4Week",2419200);
 
         plug1 = new plugProfile("Plug1", applianceList.get(0));
-        plug2 = new plugProfile("Plug2", applianceList.get(1));
-        plug3 = new plugProfile("Plug3", applianceList.get(2));
+        // plug2 = new plugProfile("Plug2", applianceList.get(1));
+        // plug3 = new plugProfile("Plug3", applianceList.get(2));
 
-        plug1.setConnected(true);
-        plug1.setIP("192.168.43.28");
+        // plug1.setConnected(true);
+        // plug1.setIP("192.168.43.28");
 
-        plug2.setConnected(true);
-        plug2.setIP("192.168.43.28");
+        // plug2.setConnected(true);
+        // plug2.setIP("192.168.43.28");
 
         plugProfileList.add(plug1);
-        plugProfileList.add(plug2);
-        plugProfileList.add(plug3);
+        // plugProfileList.add(plug2);
+        // plugProfileList.add(plug3);
 
     }
 
@@ -69,7 +69,7 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> params = new ArrayList<>();
         String unconnectedString = execFlaskMethod("getUnconnected",params);
 
-        ArrayList<String> unconnectedList = stringToList(unconnectedString);
+        ArrayList<String> unconnectedList = stringToList(unconnectedString,'|');
 
         return unconnectedList;
     }
@@ -78,7 +78,7 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> params = new ArrayList<>();
         String connectedString = execFlaskMethod("getConnected",params);
 
-        ArrayList<String> connectedList = stringToList(connectedString);
+        ArrayList<String> connectedList = stringToList(connectedString,'|');
 
         return connectedList;
     }
@@ -107,9 +107,9 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> params = new ArrayList<>();
         params.add(plug.getName());
         params.add(plug.getDescription());
-        params.add(plug.getAppliance.getName());
+        params.add(plug.getAppliance().getName());
 
-        result = execFlaskMethod("addProfile",params);
+        String result = execFlaskMethod("addProfile",params);
     }
 
     public void removePlugProfile(plugProfile plug){
@@ -118,7 +118,7 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> params = new ArrayList<>();
         params.add(plug.getName());
 
-        result = execFlaskMethod("deleteProfile",params);
+        String result = execFlaskMethod("deleteProfile",params);
     }
 
     public void addAppliance(applianceProfile appliance){
@@ -127,9 +127,9 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> params = new ArrayList<>();
         params.add(appliance.getName());
         params.add(Boolean.toString(appliance.getPermOn()));
-        params.add(Integer.toString(appliance.getTimeUntilDisable()))
+        params.add(Integer.toString(appliance.getTimeUntilDisable()));
 
-        result = execFlaskMethod("addApplianceProfile",params);
+        String result = execFlaskMethod("addApplianceProfile",params);
     }
 
     public void removeAppliance(applianceProfile appliance){
@@ -138,7 +138,7 @@ public class appDriver extends FlaskExecutor{
         ArrayList<String> params = new ArrayList<>();
         params.add(appliance.getName());
         
-        result = execFlaskMethod("deleteApplianceProfile",params);
+        String result = execFlaskMethod("deleteApplianceProfile",params);
     }
 
     public plugProfile getPlugByName(String profileName){
@@ -173,7 +173,7 @@ public class appDriver extends FlaskExecutor{
 
         String datapointsString = execFlaskMethod("getGraphPoints",params);
 
-        ArrayList<String> datapointsList = stringToList(datapointsString);
+        ArrayList<String> datapointsList = stringToList(datapointsString,'|');
 
         return datapointsList;
     }
@@ -200,6 +200,38 @@ public class appDriver extends FlaskExecutor{
         }
 
         return timePoints;
+    }
+
+    public void loadPlugProfiles(){
+        ArrayList<String> params = new ArrayList<>();
+
+        String result = execFlaskMethod("profiles",params);
+        
+        ArrayList<String> listOfPlugs = stringToList(result,'#');
+
+        for (String plug:listOfPlugs){
+            ArrayList<String> plugDetails = stringToList(plug,'|');
+
+            plugProfile newPlug = new plugProfile(plugDetails.get(0),
+            getApplianceByName(plugDetails.get(2)),plugDetails.get(1));
+            plugProfileList.add(newPlug);
+        }
+    }
+
+    public void loadApplianceProfiles(){
+        ArrayList<String> params = new ArrayList<>();
+
+        String result = execFlaskMethod("applianceProfile",params);
+        
+        ArrayList<String> listOfAppliances = stringToList(result,'#');
+
+        for (String appliance:listOfAppliances){
+            ArrayList<String> applianceDetails = stringToList(appliance,'|');
+
+            applianceProfile newAppliance = new applianceProfile(applianceDetails.get(0),
+            Boolean.parseBoolean(applianceDetails.get(1)),10,Integer.parseInt(applianceDetails.get(2)));
+            applianceList.add(newAppliance);
+        }
     }
 
     //load profiles
