@@ -105,9 +105,11 @@ public class appDriver extends FlaskExecutor{
         plugProfileList.add(plug);
 
         ArrayList<String> params = new ArrayList<>();
-        params.add(plug.getName());
-        params.add(plug.getDescription());
-        params.add(plug.getAppliance().getName());
+        params.add(plug.getName().replace(' ','~'));
+        params.add(plug.getDescription().replace(' ','~'));
+        params.add(plug.getAppliance().getName().replace(' ','~'));
+        params.add(plug.getPName().replace(' ','~'));
+        params.add(plug.getIP());
 
         String result = execFlaskMethod("addProfile",params);
     }
@@ -116,7 +118,7 @@ public class appDriver extends FlaskExecutor{
         plugProfileList.remove(plug);
         
         ArrayList<String> params = new ArrayList<>();
-        params.add(plug.getName());
+        params.add(plug.getName().replace(' ','~'));
 
         String result = execFlaskMethod("deleteProfile",params);
     }
@@ -125,7 +127,7 @@ public class appDriver extends FlaskExecutor{
         applianceList.add(appliance);          
     
         ArrayList<String> params = new ArrayList<>();
-        params.add(appliance.getName());
+        params.add(appliance.getName().replace(' ','~'));
         params.add(Boolean.toString(appliance.getPermOn()));
         params.add(Integer.toString(appliance.getTimeUntilDisable()));
 
@@ -136,7 +138,7 @@ public class appDriver extends FlaskExecutor{
         applianceList.remove(appliance);
 
         ArrayList<String> params = new ArrayList<>();
-        params.add(appliance.getName());
+        params.add(appliance.getName().replace(' ','~'));
         
         String result = execFlaskMethod("deleteApplianceProfile",params);
     }
@@ -211,9 +213,13 @@ public class appDriver extends FlaskExecutor{
 
         for (String plug:listOfPlugs){
             ArrayList<String> plugDetails = stringToList(plug,'|');
-            plugProfile newPlug = new plugProfile(plugDetails.get(0),
-            getApplianceByName(plugDetails.get(2)),plugDetails.get(1));
+            plugProfile newPlug = new plugProfile(plugDetails.get(0).replace('~',' '),
+            getApplianceByName(plugDetails.get(2).replace('~',' ')),plugDetails.get(1).replace('~',' '),this);
             plugProfileList.add(newPlug);
+            
+            newPlug.setPName(plugDetails.get(3).replace('~',' '));
+            newPlug.setIP(plugDetails.get(4));
+            newPlug.isPlugConnected();
         }
     }
 
@@ -227,7 +233,7 @@ public class appDriver extends FlaskExecutor{
         for (String appliance:listOfAppliances){
             ArrayList<String> applianceDetails = stringToList(appliance,'|');
 
-            applianceProfile newAppliance = new applianceProfile(applianceDetails.get(0),
+            applianceProfile newAppliance = new applianceProfile(applianceDetails.get(0).replace('~',' '),
             Boolean.parseBoolean(applianceDetails.get(1)),10,Integer.parseInt(applianceDetails.get(2)));
             applianceList.add(newAppliance);
         }

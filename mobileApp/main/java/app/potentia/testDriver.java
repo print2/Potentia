@@ -4,8 +4,8 @@ import java.lang.Thread;
 public class testDriver {
 
     public static void main(String[] args){
-        // applianceProfile test = new applianceProfile("test",false,10,2);
-        // applianceProfile test2  = new applianceProfile("test2",false,10,5);
+        applianceProfile test = new applianceProfile("test",false,10,2);
+        applianceProfile test2  = new applianceProfile("test2",false,10,5);
         // plugProfile plug = new plugProfile("PC",test,"Description");
         // plugProfile plug2 = new plugProfile("PhoneCharger",test2,"Desc2");
         // plug.setIP("192.168.43.28");
@@ -14,21 +14,42 @@ public class testDriver {
         
 
         appDriver potentia = new appDriver();
+        plugProfile plug = new plugProfile("seven",test,"Description with space",potentia);
+        plugProfile plug2 = new plugProfile("eight",test2,"Desc2",potentia);
+
+        potentia.removePlugProfile(plug);
+        potentia.removePlugProfile(plug2);
+        potentia.removeAppliance(test);
+        potentia.removeAppliance(test2);
+
+        potentia.addAppliance(test);
+        potentia.addAppliance(test2);
+        potentia.addPlugProfile(plug);
+        potentia.addPlugProfile(plug2);
+
+        // potentia.loadPlugProfiles();
 
         // potentia.removePlugProfile(plug);
         // potentia.removePlugProfile(plug2);
         // potentia.removeAppliance(test);
         // potentia.removeAppliance(test2);
 
-        // for(plugProfile plug:potentia.getPlugList()){
-        //     System.out.println(plug.getName());
+        // potentia.addAppliance(test);
+        // potentia.addAppliance(test2);
+        // potentia.addPlugProfile(plug);
+        // potentia.addPlugProfile(plug2);
+
+        // plugProfile plug = new plugProfile("seven",test,"Description with space",potentia);
+
+        // for(plugProfile plugtest:potentia.getPlugList()){
+        //     System.out.println(plugtest.getPName());
         // }
 
         // potentia.loadApplianceProfiles();
         // potentia.loadPlugProfiles();
 
         // for(plugProfile plug:potentia.getPlugList()){
-        //     System.out.println(plug.getName());
+        //     System.out.println(plug.getPName());
         // }
 
         // potentia.removePlugProfile(plug);
@@ -38,12 +59,12 @@ public class testDriver {
         
         // potentia.loadPlugProfiles();
         
-        // ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
+        ArrayList<String> unconnected = potentia.getUnconnectedPlugs();
         // plug2.connectPlug("a34d7b8e32","PLUSNET-SCN5",unconnected.get(0));
-        // plug.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
+        plug.connectPlug("8b8389fb",potentia.getNetwork(),unconnected.get(0));
 // 
         // ArrayList<String> dataPoints = potentia.getGraphDataPoints(plug,"Week");
-        String[] timePoints = potentia.getGraphTimePoints("Hour");
+        // String[] timePoints = potentia.getGraphTimePoints("Hour");
 
         // for(int i=0;i<dataPoints.size();i++){
         //     System.out.println(dataPoints.get(i) + " " );

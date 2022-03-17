@@ -54,7 +54,7 @@ def getPlugProfiles():
     string = ""
     results =  db["Profiles"].find()
     for record in results:
-        string = string + record["_id"] + "|" + record["description"] + "|" + record["applianceName"] + "#"
+        string = string + record["_id"] + "|" + record["description"] + "|" + record["applianceName"] + "|" + record["plugName"] + "|" + record["plugIP"] + "#"
     string = string[:-1]
     return dumps(string)
 
@@ -67,9 +67,9 @@ def getApplianceProfiles():
     string = string[:-1]
     return dumps(string)
 
-@app.route('/addProfile/<name>&<description>&<applianceName>')
-def addPlugProfile(name,description,applianceName):
-    post={"_id": name,"description": description, "applianceName": applianceName}
+@app.route('/addProfile/<name>&<description>&<applianceName>&<plugName>&<ip>')
+def addPlugProfile(name,description,applianceName,plugName,ip):
+    post={"_id": name,"description": description, "applianceName": applianceName, "plugName": plugName, "plugIP": ip}
     db["Profiles"].insert_one(post)
     return dumps("Done")
 
@@ -87,6 +87,11 @@ def deletePlugProfile(name):
 @app.route('/deleteApplianceProfile/<name>')
 def deleteApplianceProfile(name):
     db["Appliances"].delete_many({"_id":name})
+    return dumps("Done")
+
+@app.route('/updatePName/<name>&<PName>&<ip>')
+def updateProfilesPName(name,PName,ip):
+    db["Profiles"].update_one({"_id": name},{"$set": {"plugName": PName, "plugIP":ip}})
     return dumps("Done")
 
 def getMonth(currDay,currMonth):

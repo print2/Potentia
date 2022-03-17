@@ -7,13 +7,16 @@ public class plugProfile extends FlaskExecutor{
     private boolean poweredOn;
     private float currUsage;
 
-    private String plugIP;
+    private String plugIP = "none";
     private String plugMAC;
+    private String plugName = "none";
 
     private boolean connectedToPlug = false;
 
     private long timeTurnedOn = -1;
     private long timeStandBy = -1;
+
+    private appDriver app;
 
     plugProfile(String name){
         this.name = name;
@@ -29,10 +32,15 @@ public class plugProfile extends FlaskExecutor{
         this.appliance = appliance;
     }
 
-    plugProfile(String name, applianceProfile appliance, String description){
+    plugProfile(String name, applianceProfile appliance, String description,appDriver app){
         this.name = name;
         this.appliance = appliance;
         this.description = description;
+        this.app = app;
+
+        bgChecks checker = new bgChecks(this);
+        Thread bgThread = new Thread(checker);
+        bgThread.start();
     }
 
     public String getName(){
@@ -41,6 +49,14 @@ public class plugProfile extends FlaskExecutor{
 
     public void setName(String name){
         this.name = name;
+    }
+
+    public String getPName(){
+        return this.plugName;
+    }
+
+    public void setPName(String name){
+        this.plugName = name;
     }
 
     public String getDescription(){
@@ -178,7 +194,9 @@ public class plugProfile extends FlaskExecutor{
 
         this.plugIP = infoList.get(0);
         this.plugMAC = infoList.get(1);
-
+        this.plugName = ssid;
+        
+        updatePNameDB();
         this.connectedToPlug = true;
 
         changePlugAlias(name);
@@ -187,10 +205,6 @@ public class plugProfile extends FlaskExecutor{
         if(poweredOn){
             this.timeTurnedOn = System.currentTimeMillis() / 60000;
         }
-
-        bgChecks checker = new bgChecks(this);
-        Thread bgThread = new Thread(checker);
-        bgThread.start();
 
         plugReader newReader = new plugReader(this);
         Thread readerThread = new Thread(newReader);
@@ -231,6 +245,35 @@ public class plugProfile extends FlaskExecutor{
             this.timeTurnedOn = -1;
         }
         
+    }
+
+    public void isPlugConnected(){
+        ArrayList<String> connected = new ArrayList<>();
+        connected.add("failed IO");
+        while (connected.size() != 0 && connected.get(0).equals("failed IO")){
+            connected = app.getConnectedPlugs();
+        }
+
+        System.out.println("TEST:" + this.plugName);
+        for(String plug:connected){
+            System.out.println(plug);
+            if(plug.equals(this.plugName)){
+                this.connectedToPlug = true;
+                return;
+            }
+        }
+        this.connectedToPlug = false;
+        this.plugName = "none";
+        updatePNameDB();
+    }
+
+    public void updatePNameDB(){
+        ArrayList<String> params = new ArrayList<>();
+        params.add(this.name.replace(' ','~'));
+        params.add(this.plugName.replace(' ','~'));
+        params.add(this.plugIP);
+
+        String result = execFlaskMethod("updatePName",params);
     }
 
 
