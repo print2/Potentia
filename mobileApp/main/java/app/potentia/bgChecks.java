@@ -1,3 +1,5 @@
+package app.potentia;
+
 public class bgChecks implements Runnable{
     private plugProfile plug;
 
@@ -24,8 +26,8 @@ public class bgChecks implements Runnable{
     public void run(){
         while (true){
             try{
-                Thread.sleep(10000);
                 backgroundChecks();
+                Thread.sleep(10000);
             }
             catch (Exception e){
                 e.printStackTrace();

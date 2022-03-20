@@ -1,5 +1,6 @@
 package app.potentia;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -72,12 +73,12 @@ public class CreateApplFragment extends Fragment {
 
                 if (validateForm()){
                     if(TextUtils.isEmpty(timer.getText())){
-                        applianceProfile = new applianceProfile(sName, permOn);
+                        applianceProfile = new applianceProfile(sName, permOn, -1, -1);
                     } else {
                         iTimer = Integer.parseInt(timer.getText().toString());
-                        applianceProfile = new applianceProfile(sName, permOn, iTimer, iTimer);
+                        applianceProfile = new applianceProfile(sName, permOn, 10, iTimer);
                     }
-                    appDriver.addAppliance(applianceProfile);
+                    new addApplianceAsync().execute(applianceProfile);
                     ((MainActivity) getActivity()).onBackPressed();
                 }
             }
@@ -114,8 +115,22 @@ public class CreateApplFragment extends Fragment {
         } else if (pos == 2 && timer.length() == 0){
             timer.setError("Please enter a time or select another option");
             return false;
+        } else if (!appDriver.isApplianceUnique(sName)){
+            name.setError("Duplicate name");
+            return false;
         } else {
             return true;
+        }
+    }
+
+    public class addApplianceAsync extends AsyncTask<applianceProfile, Void, String> {
+        @Override
+        protected String doInBackground(applianceProfile... params) {
+            appDriver.addAppliance(params[0]);
+            return "Done";
+        }
+        @Override
+        protected void onPostExecute(String result){
         }
     }
 }

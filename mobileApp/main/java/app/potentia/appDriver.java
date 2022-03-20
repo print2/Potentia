@@ -1,3 +1,5 @@
+package app.potentia;
+
 import java.util.*;
 import java.time.*;
 import java.text.*;
@@ -6,9 +8,10 @@ public class appDriver extends FlaskExecutor{
     private ArrayList<applianceProfile> applianceList = new ArrayList<>();
     private ArrayList<plugProfile> plugProfileList = new ArrayList<>();
 
+    private applianceProfile none = new applianceProfile("None", false, -1, -1);
     private applianceProfile fridge = new applianceProfile("Fridge", true,-1,-1);
     private applianceProfile kettle = new applianceProfile("Kettle",false,10,20);
-    private applianceProfile charger = new applianceProfile("Charger",false,180,0);
+    private applianceProfile charger = new applianceProfile("Charger",false,180,-1);
     private applianceProfile microwave = new applianceProfile("Microwave",false,60,120);
     private applianceProfile television = new applianceProfile("Television",false,120,60);
     private applianceProfile lamp = new applianceProfile("Lamp",false,120,60);
@@ -29,6 +32,7 @@ public class appDriver extends FlaskExecutor{
     private HashMap<String,Integer> timeValues = new HashMap<>();
 
     public appDriver(){
+        applianceList.add(none);
         applianceList.add(fridge);
         applianceList.add(kettle);
         applianceList.add(charger);
@@ -95,6 +99,14 @@ public class appDriver extends FlaskExecutor{
 
     public ArrayList<applianceProfile> getApplianceList(){
         return applianceList;
+    }
+
+    public ArrayList<applianceProfile> getApplianceListN(){
+        ArrayList<applianceProfile> newList = new ArrayList<>();
+        for(int i = 1; i < applianceList.size(); i++){
+            newList.add(applianceList.get(i));
+        }
+        return newList;
     }
 
     public ArrayList<plugProfile> getPlugList(){
@@ -184,7 +196,7 @@ public class appDriver extends FlaskExecutor{
         int difference = timeValues.get(timePeriod) / this.numGraphDatapoints;
         long currEpoch = System.currentTimeMillis();
         String strFormat = "";
-        if(timePeriod == "Hour" || timePeriod == "Day"){
+        if(timePeriod.equals("Hour") || timePeriod.equals("Day")){
             strFormat = "HH:mm";
         }
         else{

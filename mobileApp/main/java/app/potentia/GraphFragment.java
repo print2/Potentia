@@ -55,6 +55,7 @@ public class GraphFragment extends Fragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                currentPlug = ((MainActivity) getActivity()).getCurrentPlug();
                 timeSpace = tab.getText().toString();
                 new graphAsync().execute(timeSpace);
             }
@@ -64,6 +65,7 @@ public class GraphFragment extends Fragment {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                currentPlug = ((MainActivity) getActivity()).getCurrentPlug();
                 timeSpace = tab.getText().toString();
                 new graphAsync().execute(timeSpace);
             }
@@ -90,7 +92,6 @@ public class GraphFragment extends Fragment {
 
     public void createGraph(){
         graph.removeAllSeries();
-        graph.getViewport().setScrollable(true);
 
         series = new LineGraphSeries<>();
         for(int i = 0; i < timePoints.length; i++){
@@ -102,7 +103,7 @@ public class GraphFragment extends Fragment {
         }
         graph.addSeries(series);
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-        staticLabelsFormatter.setHorizontalLabels(new String []{null, timePoints[3], timePoints[11], timePoints[19], null});
+        staticLabelsFormatter.setHorizontalLabels(new String []{null, timePoints[6], timePoints[12], timePoints[18], null});
         graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
     }
 }

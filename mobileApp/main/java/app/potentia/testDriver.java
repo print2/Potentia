@@ -1,3 +1,5 @@
+package app.potentia;
+
 import java.util.*;
 import java.lang.Thread;
 

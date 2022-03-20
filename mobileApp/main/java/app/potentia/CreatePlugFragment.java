@@ -1,5 +1,6 @@
 package app.potentia;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -65,7 +66,6 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
         //appliance list
         applianceProfiles = appDriver.getApplianceList();
         applianceNames.clear();
-        applianceNames.add("None");
         for(int i = 0; i < applianceProfiles.size(); i++){
             applianceNames.add(applianceProfiles.get(i).getName());
         }
@@ -101,19 +101,19 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
                     plug = new plugProfile(sName);
                     if(hasDescription && hasAppliance){
                         sDescription = description.getText().toString();
-                        plug = new plugProfile(sName, applianceProfiles.get(pos-1), sDescription);
+                        plug = new plugProfile(sName, applianceProfiles.get(pos), sDescription, appDriver);
 
                     } else if (hasDescription && !hasAppliance){
                         sDescription = description.getText().toString();
-                        plug = new plugProfile(sName, sDescription);
+                        plug = new plugProfile(sName, applianceProfiles.get(0), sDescription, appDriver);
 
                     } else if (!hasDescription && hasAppliance){
-                        plug = new plugProfile(sName, applianceProfiles.get(pos-1));
+                        plug = new plugProfile(sName, applianceProfiles.get(pos), " ", appDriver);
 
                     } else if (!hasDescription && !hasAppliance){
-                        plug = new plugProfile(sName);
+                        plug = new plugProfile(sName, applianceProfiles.get(0), " ", appDriver);
                     }
-                    appDriver.addPlugProfile(plug);
+                    new addPlugAsync().execute(plug);
                     ((MainActivity) getActivity()).onBackPressed();
                 }
             }
@@ -134,6 +134,9 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
         if (name.length() == 0){
             name.setError("Please enter a name");
             return false;
+        } else if (!appDriver.isPlugUnique(sName)){
+            name.setError("Duplicate name");
+            return false;
         } else {
             if(description.length() > 0){
                 hasDescription = true;
@@ -144,6 +147,17 @@ public class CreatePlugFragment extends Fragment implements AdapterView.OnItemSe
                 hasAppliance = true;
             }
             return true;
+        }
+    }
+
+    public class addPlugAsync extends AsyncTask<plugProfile, Void, String> {
+        @Override
+        protected String doInBackground(plugProfile... params) {
+            appDriver.addPlugProfile(params[0]);
+            return "Done";
+        }
+        @Override
+        protected void onPostExecute(String result){
         }
     }
 }

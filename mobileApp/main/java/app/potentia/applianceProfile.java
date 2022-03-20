@@ -1,14 +1,11 @@
+package app.potentia;
+
 public class applianceProfile {
     private String name;
     private boolean permOn;
     private int timeUntilNotify;
     private int timeUntilDisable;
     private int timeOnStandby;
-
-    public applianceProfile(String name, boolean permOn){
-        this.name = name;
-        this.permOn = permOn;
-    }
 
     public applianceProfile(String name, boolean permOn, int timeUntilDisableSB,int timeUntilDisable){
         this.name = name;

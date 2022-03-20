@@ -1,3 +1,5 @@
+package app.potentia;
+
 import java.util.*;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -5,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class FlaskExecutor {
+
+
 
     protected String execFlaskMethod(String methodName, ArrayList<String> parameters){
         String ip = "192.168.43.24:5000";

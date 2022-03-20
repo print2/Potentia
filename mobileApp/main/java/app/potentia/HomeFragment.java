@@ -110,6 +110,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     public plugProfile getCurrentPlug(){
         return currentPlug;
     }
+
     public AsyncTask getAsync(){
         return  update;
     }

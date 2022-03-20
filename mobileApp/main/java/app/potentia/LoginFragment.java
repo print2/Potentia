@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import app.potentia.databinding.FragmentLoginBinding;
@@ -30,6 +31,8 @@ public class LoginFragment extends Fragment {
 
     private View inflatedView;
     private Button login;
+    private EditText username;
+    private EditText password;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,12 +40,20 @@ public class LoginFragment extends Fragment {
 
         this.inflatedView = inflater.inflate(R.layout.fragment_login, container, false);
 
+        username = inflatedView.findViewById(R.id.username);
+        password = inflatedView.findViewById(R.id.password);
+
         //login button
         login = inflatedView.findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity) getActivity()).hasLoggedIn(true);
+                if(username.getText().toString().equals("potentia") && password.getText().toString().equals("password")){
+                    ((MainActivity) getActivity()).hasLoggedIn(true);
+                } else {
+                    username.setError("Please enter the correct username & password");
+                }
+
             }
         });
 

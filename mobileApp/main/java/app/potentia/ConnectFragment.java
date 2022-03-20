@@ -115,7 +115,7 @@ public class ConnectFragment extends Fragment{
 
                     //dialog alert to connect
                     AlertDialog.Builder builder = new AlertDialog.Builder(inflatedView.getContext());
-                    builder.setMessage("Are you sure you want to connect " + mPlugName + "to " + unConnected.get(position) + "?");
+                    builder.setMessage("Are you sure you want to connect " + mPlugName + " to " + unConnected.get(position) + "?");
                     builder.setCancelable(true);
 
                     builder.setPositiveButton(

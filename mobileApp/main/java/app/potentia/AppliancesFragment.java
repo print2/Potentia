@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -46,7 +47,7 @@ public class AppliancesFragment extends Fragment {
         inflatedView = inflater.inflate(R.layout.fragment_appliances, container, false);
 
         appDriver = ((MainActivity) getActivity()).getAppDriver();
-        allAppliances = appDriver.getApplianceList();
+        allAppliances = appDriver.getApplianceListN();
 
         listView = inflatedView.findViewById(R.id.applianceList);
         CustomAdapter adapter = new CustomAdapter(inflatedView.getContext(), allAppliances, appDriver);
@@ -102,6 +103,17 @@ public class AppliancesFragment extends Fragment {
             return 0;
         }
 
+        public class deleteApplianceAsync extends AsyncTask<applianceProfile, Void, String> {
+            @Override
+            protected String doInBackground(applianceProfile... params) {
+                appDriver.removeAppliance(params[0]);
+                return "Done";
+            }
+            @Override
+            protected void onPostExecute(String result){
+            }
+        }
+
         @SuppressLint("ViewHolder")
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
@@ -119,7 +131,7 @@ public class AppliancesFragment extends Fragment {
             if(x.getPermOn()){
                 timer.setText("Timer: Always On");
             } else {
-                if (x.getTimeUntilDisable() > 0){
+                if (x.getTimeUntilDisable() >= 0){
                     timer.setText("Timer: " + x.getTimeUntilDisable() + " min");
                 } else {
                     timer.setText("Timer: None");
@@ -138,7 +150,7 @@ public class AppliancesFragment extends Fragment {
                             "Yes",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    appDriver.removeAppliance(x);
+                                    new deleteApplianceAsync().execute(x);
                                     notifyDataSetChanged();
                                 }
                             });

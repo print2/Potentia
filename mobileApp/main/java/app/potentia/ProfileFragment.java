@@ -140,7 +140,7 @@ public class ProfileFragment extends Fragment {
                         "Yes",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                appDriver.removePlugProfile(thisPlug);
+                                new deletePlugAsync().execute(thisPlug);
                                 ((MainActivity) getActivity()).onBackPressed();
                             }
                         });
@@ -162,8 +162,10 @@ public class ProfileFragment extends Fragment {
         power.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new powerAsync().execute();
-                updatePower();
+                if(thisPlug.getConnected()){
+                    new powerAsync().execute();
+                    updatePower();
+                }
             }
         });
 
@@ -189,6 +191,17 @@ public class ProfileFragment extends Fragment {
             power.setColorFilter(getResources().getColor(R.color.teal_700));
         } else {
             power.setColorFilter(getResources().getColor(R.color.grey));
+        }
+    }
+
+    public class deletePlugAsync extends AsyncTask<plugProfile, Void, String> {
+        @Override
+        protected String doInBackground(plugProfile... params) {
+            appDriver.removePlugProfile(params[0]);
+            return "Done";
+        }
+        @Override
+        protected void onPostExecute(String result){
         }
     }
 }

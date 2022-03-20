@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        new loadAsync().execute();
+
         if(!login){
             switchFragment(loginFragment);
         }
@@ -69,6 +71,18 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         return false;
     }
 
+    public class loadAsync extends AsyncTask<Void, Void, String>{
+        @Override
+        protected String doInBackground(Void... params) {
+            appDriver.loadApplianceProfiles();
+            appDriver.loadPlugProfiles();
+            return "Done";
+        }
+        @Override
+        protected void onPostExecute(String result){
+        }
+    }
+
     public void switchFragment(Fragment fragment){
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container,fragment).commit();
@@ -93,7 +107,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     }
 
     public plugProfile getCurrentPlug(){
-        return homeFragment.getCurrentPlug();
+        plugProfile currentPlug = homeFragment.getCurrentPlug();
+        return currentPlug;
     }
 
     public appDriver getAppDriver(){
