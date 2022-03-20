@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/drawable-anydpi/ic_add.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/drawable-anydpi/ic_home.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/drawable/ic_launcher_background.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/activity_main.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/appliancelist_view.xml" value="0.3484375" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_appliances.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_connect.xml" value="0.3" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_create_appl.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_create_plug.xml" value="0.264" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_graph.xml" value="0.3484375" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_home.xml" value="0.264" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_info.xml" value="0.2758152173913043" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_login.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_plug.xml" value="0.176" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_plugmain.xml" value="0.264" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_profile.xml" value="0.3893229166666667" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/fragment_starter.xml" value="0.2758152173913043" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/pluglist_view.xml" value="0.4" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/layout/unconnectedlist_view.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/menu/bottom_nav_menu.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/App/Potentia/app/src/main/res/xml/network_security_config.xml" value="0.25181159420289856" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/drawable-anydpi/ic_home.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/drawable-anydpi/ic_plugs.xml" value="0.31614583333333335" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/drawable/ic_launcher_background.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/layout/fragment_home.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/layout/fragment_info.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/layout/fragment_login.xml" value="0.2" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/layout/fragment_notification.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/layout/fragment_plug.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/layout/fragment_settings.xml" value="0.3625" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/layout/fragment_test.xml" value="0.20260416666666667" />
+        <entry key="..\:/Users/nuria/OneDrive/Documentos/Uni/Year2/SCC.230/Potentia/app/src/main/res/menu/bottom_nav_menu.xml" value="0.3625" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.3484375" />
+      </ProjectState>
+    </option>
+  </component>
+</project>

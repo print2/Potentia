@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Username" />
+            android:hint="Username" />
 
         <EditText
             android:id="@+id/password"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPassword"
-            android:text="Password" />
+            android:hint="Password" />
 
     </TableLayout>
 
